@@ -21,3 +21,14 @@ Windows-first private installer. Updates notify users and require confirmation. 
 
 ## Production safety
 The repository is separate from the live website/portal repository. Do not deploy changes to production or modify Supabase schema/functions without explicit approval.
+
+
+## Client and family profiles
+
+- Reuse the existing client/family relationships and stable identifiers; do not create duplicate client records.
+- The existing primary-holder account/login model remains unchanged. Family members do not receive new logins as part of KKA Desk.
+- A family account groups profiles; each selected profile is the tax and document scope. Credentials, PAN/Income Tax settings, GST registrations, frequency history, jobs, files and audit references are profile-scoped.
+- Never assume family members share a PAN, GSTIN, portal credentials, audit status or filing frequency. Each profile and GST registration must be validated independently.
+- A family-wide batch is only a UI convenience that fans out into separate profile-scoped jobs, with per-profile destinations and independent outcomes.
+- Documents must be segregated by stable family/account ID and member/profile ID. A display name is never a canonical authorization or storage key.
+- The tax automation feature is admin-only and local to KKA Desk. It does not change the existing client-side portal, family login behavior, or production schema/functions.

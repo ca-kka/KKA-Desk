@@ -66,7 +66,7 @@ public sealed class PortalSyncService(HttpClient httpClient, PortalSyncOptions o
 
         var membershipsUri = new Uri(baseUri,
             "/rest/v1/client_account_members?select=account_id,client_id,relationship,is_primary,active," +
-            "clients(id,display_name,legal_name,pan,tan,cin,gstin,mobile,active)&active=eq.true");
+            "clients(id,display_name,legal_name,pan,tan,cin,gstin,mobile,active),client_accounts(active)&active=eq.true&client_accounts.active=eq.true");
         using var membershipsResponse = await SendAsync(membershipsUri, accessToken, cancellationToken);
         membershipsResponse.EnsureSuccessStatusCode();
         using var membershipsJson = JsonDocument.Parse(
@@ -77,7 +77,10 @@ public sealed class PortalSyncService(HttpClient httpClient, PortalSyncOptions o
         {
             if (!item.TryGetProperty("clients", out var clientNode) ||
                 clientNode.ValueKind != JsonValueKind.Object ||
-                ReadBool(clientNode, "active") == false)
+                ReadBool(clientNode, "active") != true ||
+                !item.TryGetProperty("client_accounts", out var accountNode) ||
+                accountNode.ValueKind != JsonValueKind.Object ||
+                ReadBool(accountNode, "active") != true)
                 continue;
 
             var clientId = ReadString(item, "client_id");

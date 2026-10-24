@@ -37,7 +37,7 @@ dotnet restore Kka.Desk.sln
 dotnet build Kka.Desk.sln --configuration Release
 ```
 
-GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and CodeQL C# analysis. Successful main-branch builds publish the tested EXE and checksum as a GitHub Release.
+GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and mocked OTP/role-gate tests. CodeQL C# analysis runs in a separate workflow so it cannot block the Windows download artifact.
 
 ## Not production-ready yet
 
@@ -55,4 +55,4 @@ Every push to `main` and manual workflow run attempts to create a self-contained
 
 GitHub Actions artifacts are retained for 14 days. A permanent GitHub Release could not be created by the current Actions token because GitHub returned a 403 permission error; the workflow does not attempt to bypass that restriction. Use the Actions link above for tested builds.
 
-The workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, dummy-only Windows Credential Manager save/isolation/removal tests, mocked OTP and role-gate tests, a self-contained single-file publish, an 8-second process-startup smoke test, and CodeQL analysis. Release publication waits for both the Windows test job and CodeQL job to pass. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.
+The Windows workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, dummy-only Windows Credential Manager save/isolation/removal tests, mocked OTP and role-gate tests, a self-contained single-file publish, and an 8-second process-startup smoke test. CodeQL runs separately on pushes, pull requests, manual requests, and a weekly schedule. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.

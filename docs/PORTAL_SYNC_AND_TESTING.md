@@ -4,7 +4,7 @@ KKA Desk now has a read-only adapter for the existing KKA Supabase project. It q
 
 ## Important limitation
 
-This adapter does not implement login, email OTP, TOTP/MFA challenge, session refresh, or sign-out. It deliberately requires a token from a separately reviewed sign-in flow and an explicit confirmation that the portal's verification gate has completed. Do not wire it to password-only login. The desktop callback/redirect and the existing portal OTP policy must be integrated and tested before live sync is enabled in the UI. Expired sessions and authorization failures must fail closed.
+The desktop UI now calls the portal's existing `client-login-otp` function and supports its email OTP challenge, then uses the returned user session for a read-only profile sync. Session refresh/revocation handling and live acceptance testing remain outstanding. Expired sessions and authorization failures must fail closed.
 
 ## Family model
 
@@ -16,7 +16,7 @@ This adapter does not implement login, email OTP, TOTP/MFA challenge, session re
 
 ## CI safeguards
 
-The Windows workflow treats compiler warnings as errors, parses XAML/project XML, rejects merge-conflict markers, and runs CodeQL C# security analysis. This reduces syntax and static-analysis regressions but cannot guarantee zero runtime defects. Sentry runtime monitoring is not connected yet because no Sentry project DSN/account has been configured for KKA Desk.
+The Windows workflow treats compiler warnings as errors, parses XAML/project XML, rejects merge-conflict markers, and runs CodeQL C# security analysis. This reduces syntax and static-analysis regressions but cannot guarantee zero runtime defects. CodeQL is configured for local analysis because GitHub code-scanning upload is not enabled for this private repository. Sentry/CodeAnt is not connected; no Sentry DSN or CodeAnt app integration was available in the connected workspace.
 
 
 ## Current UI hand-off
@@ -37,3 +37,8 @@ The current client schema has one GSTIN field per client record. Multiple GST re
 8. Run the Windows build/XAML validation and local CodeQL analysis after every change.
 
 Live sign-in/OTP acceptance testing still requires a human operator with authorized KKA credentials. Do not commit credentials, OTP values, access/refresh tokens, or Sentry DSNs.
+
+
+## Local credential vault
+
+The tax profile UI now offers separate Income Tax and GST credential save/remove actions. Credentials are keyed by family/account ID, member profile ID, tax system and GSTIN for GST, then stored as a Windows Credential Manager generic credential under the signed-in Windows user. The app does not send these secrets to Supabase and does not write them to application files or logs. Credential save/remove is enabled only when the tax window was opened from a portal-synced profile with the corresponding PAN/GSTIN. This is an initial storage layer only: automated government-portal login/download has not been enabled, and the vault still requires a Windows pilot and security review.

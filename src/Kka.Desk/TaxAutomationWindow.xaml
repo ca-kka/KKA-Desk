@@ -39,7 +39,7 @@
                 <ComboBoxItem Content="Individual client"/>
                 <ComboBoxItem Content="Business / entity"/>
               </ComboBox>
-              <TextBlock Text="Profile isolation" Foreground="#D6B56D" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12">Tax IDs, credentials, frequency and documents apply to the selected profile only. Family members do not get separate logins.</TextBlock>
+              <TextBlock Text="PROFILE ISOLATION: Tax IDs, credentials, filing frequency and documents apply to the selected profile only. Family members do not get separate logins." Foreground="#D6B56D" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12"/>
               <CheckBox x:Name="IncomeTaxEnabled" Content="Income Tax enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#E7EDF5"/>
               <CheckBox x:Name="AuditCase" Content="Tax audit case (confirm per year)" Margin="0,0,0,12" Foreground="#E7EDF5"/>
               <TextBlock Text="Financial year" Foreground="#9AA9BC" FontSize="11"/>

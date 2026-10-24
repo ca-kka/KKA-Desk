@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: kka-desk-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -109,8 +113,23 @@ jobs:
           retention-days: 14
           compression-level: 9
 
-      - name: Publish latest tested Windows preview release
+      - name: Ensure only the latest main commit is released
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        id: latest
+        shell: pwsh
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          $latest = (git rev-parse refs/remotes/origin/main).Trim()
+          if ($latest -eq $env:GITHUB_SHA) {
+            "is_latest=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "This run matches the current main branch head."
+          } else {
+            "is_latest=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "A newer main commit exists; skipping release publication."
+          }
+
+      - name: Publish latest tested Windows preview release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.latest.outputs.is_latest == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: preview-${{ github.run_number }}

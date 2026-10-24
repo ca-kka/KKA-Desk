@@ -15,12 +15,15 @@ public partial class TaxAutomationWindow : Window
 
     private void Preview_Click(object sender, RoutedEventArgs e)
     {
-        var clientId = ClientIdBox.Text.Trim();
-        var clientName = ClientNameBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientName))
+        var familyAccountId = FamilyAccountIdBox.Text.Trim();
+        var profileId = ProfileIdBox.Text.Trim();
+        var profileName = ProfileNameBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(familyAccountId) ||
+            string.IsNullOrWhiteSpace(profileId) ||
+            string.IsNullOrWhiteSpace(profileName))
         {
-            MessageBox.Show(this, "Enter the stable client ID/code and display name before building a preview.",
-                "Client details required", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, "Enter the existing family/account ID, selected member profile ID, and profile name.",
+                "Family profile details required", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -56,10 +59,11 @@ public partial class TaxAutomationWindow : Window
 
         TasksGrid.ItemsSource = tasks;
         TaskCountText.Text = $"{tasks.Count} task(s)";
-        var root = $"<configured-root>/{SafeSegment(clientId)}";
+        var root = $"<configured-root>/{SafeSegment(familyAccountId)}/{SafeSegment(profileId)}";
         var incomePath = $"{root}/Income Tax/{SafeSegment(yearLabel)}";
         var gstPath = $"{root}/GST/{SafeSegment(yearLabel)}";
-        PunchPreviewText.Text = $"Client: {clientName} ({clientId})\nIncome Tax destination: {incomePath}\nGST destination: {gstPath}\n\nPaths are illustrative only; no files are created or moved.";
+        var profileType = (ProfileTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Profile";
+        PunchPreviewText.Text = $"Family/account: {familyAccountId}\nSelected profile: {profileName} ({profileId}) — {profileType}\nIncome Tax destination: {incomePath}\nGST destination: {gstPath}\n\nThis profile is isolated from other family members. Paths are illustrative only; no files are created or moved.";
         StatusText.Text = $"Preview created for {tasks.Count} task(s). Portal access and Punch are disabled in this build.";
     }
 

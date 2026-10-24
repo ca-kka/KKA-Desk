@@ -53,7 +53,7 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
-          dotnet publish src/Kka.Desk/Kka.Desk.csproj --configuration Release --runtime win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false --output artifacts/KKA-Desk-Windows-x64
+          dotnet publish src/Kka.Desk/Kka.Desk.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false --output artifacts/KKA-Desk-Windows-x64
 
           $exe = "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe"
           if (-not (Test-Path $exe)) {

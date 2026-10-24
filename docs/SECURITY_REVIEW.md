@@ -13,13 +13,14 @@ This is a planning baseline, not a completed security audit.
 - Avoid logging passwords, access/refresh tokens, client documents, or sensitive personal data.
 - Validate upload type, size, ownership, and destination on the server.
 - Use TLS for all backend calls and protect local session material using Windows user-scoped protection.
+- Tax-portal credentials are scoped by family account, member profile, tax system and GSTIN (where applicable) and stored through Windows Credential Manager; verify save/read/remove behavior on a dedicated Windows test account before production use.
 - Add authorization tests for inactive users, clients, unassigned clients, staff, and admins.
 
 ## Current status
 - Repository is private.
 - No production portal or Supabase resources have been changed.
-- Authentication/MFA integration is incomplete and not production-approved.
-- Source scaffold has not yet been compiled or tested on Windows.
+- Desktop sign-in/OTP flow is implemented against the portal's existing OTP function, but live acceptance testing and session refresh/revocation handling remain incomplete; not production-approved.
+- Windows CI build and XAML/XML validation pass for the portal/profile preview path. The new Credential Manager UI/vault is awaiting its own completed CI run and Windows pilot.
 - No sensitive modules should be enabled until the requirements above pass review.
 
 ## Open questions

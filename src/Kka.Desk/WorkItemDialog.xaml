@@ -1,0 +1,84 @@
+<Window x:Class="Kka.Desk.WorkItemDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="New reminder | KKA Desk" Width="520" MinWidth="500" SizeToContent="Height"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource CanvasBrush}" FontFamily="{StaticResource AppFont}"
+        Foreground="{StaticResource InkBrush}" AutomationProperties.Name="New personal reminder">
+  <Grid Margin="26">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0" Margin="0,0,0,20">
+      <TextBlock Text="NEW PERSONAL REMINDER" Foreground="{StaticResource AccentBrush}"
+                 FontSize="10" FontWeight="Bold"/>
+      <TextBlock Text="Make a little room for what matters" Foreground="{StaticResource InkBrush}"
+                 FontSize="22" FontWeight="SemiBold" Margin="0,7,0,0"/>
+      <TextBlock Text="This stays on your Windows account. Do not add client details or identifiers."
+                 Foreground="{StaticResource SecondaryInkBrush}" FontSize="12" TextWrapping="Wrap"
+                 Margin="0,6,0,0"/>
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Margin="0,0,0,14">
+      <TextBlock Text="Reminder" Foreground="{StaticResource InkBrush}" FontSize="12"
+                 FontWeight="SemiBold" Margin="0,0,0,6"/>
+      <TextBox x:Name="TitleBox" MaxLength="120" Height="42" Style="{StaticResource InputTextBoxStyle}"
+               AutomationProperties.Name="Reminder title" ToolTip="Use a general personal reminder"/>
+    </StackPanel>
+
+    <Grid Grid.Row="2" Margin="0,0,0,14">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+      <StackPanel Grid.Column="0">
+        <TextBlock Text="Type" Foreground="{StaticResource InkBrush}" FontSize="12"
+                   FontWeight="SemiBold" Margin="0,0,0,6"/>
+        <ComboBox x:Name="CategoryBox" AutomationProperties.Name="Reminder type">
+          <ComboBoxItem Content="Operations"/>
+          <ComboBoxItem Content="Learning"/>
+          <ComboBoxItem Content="Personal"/>
+        </ComboBox>
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Text="Priority" Foreground="{StaticResource InkBrush}" FontSize="12"
+                   FontWeight="SemiBold" Margin="0,0,0,6"/>
+        <ComboBox x:Name="PriorityBox" AutomationProperties.Name="Reminder priority">
+          <ComboBoxItem Content="Low"/>
+          <ComboBoxItem Content="Normal"/>
+          <ComboBoxItem Content="High"/>
+        </ComboBox>
+      </StackPanel>
+    </Grid>
+
+    <StackPanel Grid.Row="3" Margin="0,0,0,12">
+      <TextBlock Text="Due date (optional)" Foreground="{StaticResource InkBrush}" FontSize="12"
+                 FontWeight="SemiBold" Margin="0,0,0,6"/>
+      <DatePicker x:Name="DueDateBox" Height="40" SelectedDateFormat="Short"
+                  AutomationProperties.Name="Reminder due date"/>
+    </StackPanel>
+
+    <TextBlock x:Name="ValidationText" Grid.Row="4" Foreground="{StaticResource DangerBrush}"
+               FontSize="12" TextWrapping="Wrap" Visibility="Collapsed" Margin="0,0,0,12"
+               AutomationProperties.LiveSetting="Assertive"/>
+
+    <Border Grid.Row="5" Background="#F0F3F7" CornerRadius="9" Padding="11" Margin="0,0,0,18">
+      <TextBlock Text="Personal reminders only. Client names, contact details, tax IDs and document details are not supported."
+                 Foreground="{StaticResource SecondaryInkBrush}" FontSize="11" TextWrapping="Wrap"/>
+    </Border>
+
+    <DockPanel Grid.Row="6" LastChildFill="False">
+      <Button DockPanel.Dock="Right" Content="Save reminder" Click="Save_Click"
+              Style="{StaticResource PrimaryButtonStyle}" IsDefault="True"
+              AutomationProperties.Name="Save reminder"/>
+      <Button DockPanel.Dock="Right" Content="Cancel" Click="Cancel_Click" IsCancel="True"
+              Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,10,0"
+              AutomationProperties.Name="Cancel"/>
+    </DockPanel>
+  </Grid>
+</Window>

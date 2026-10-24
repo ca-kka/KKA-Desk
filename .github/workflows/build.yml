@@ -87,8 +87,7 @@ jobs:
           Write-Host "EXE size: $((Get-Item $exe).Length) bytes"
           Write-Host "SHA256: $hash"
 
-      - name: Test Windows Credential Manager isolation and cleanup
-        if: github.event_name != 'pull_request'
+      - name: Test local reminders, Credential Manager isolation and mocked auth
         run: dotnet run --project tests/Kka.Desk.CredentialVaultTests/Kka.Desk.CredentialVaultTests.csproj --configuration Release --no-restore
 
       - name: Smoke-test EXE startup
@@ -106,21 +105,27 @@ jobs:
           Write-Host "Startup smoke test passed: process stayed alive for 8 seconds."
 
       - name: Exercise desktop navigation and safety controls in Windows UI
-        if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
           Add-Type -AssemblyName UIAutomationClient
           Add-Type -AssemblyName UIAutomationTypes
 
-          $exe = (Resolve-Path "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe").Path
+          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+            $exePath = "src/Kka.Desk/bin/Release/net10.0-windows/Kka.Desk.exe"
+          }
+          else {
+            $exePath = "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe"
+          }
+          if (-not (Test-Path $exePath)) { throw "UI test executable was not found at $exePath." }
+          $exe = (Resolve-Path $exePath).Path
           $process = Start-Process -FilePath $exe -PassThru
           $desktop = [System.Windows.Automation.AutomationElement]::RootElement
           $windowType = [System.Windows.Automation.PropertyCondition]::new(
             [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
             [System.Windows.Automation.ControlType]::Window)
-          $processCondition = [System.Windows.Automation.PropertyCondition]::new(
-            [System.Windows.Automation.AutomationElement]::ProcessIdProperty, $process.Id)
-          $windowCondition = [System.Windows.Automation.AndCondition]::new($windowType, $processCondition)
+          # WPF dialogs are top-level UIA windows; their accessible names may
+          # differ from their visual titles, so match the unique accessible name.
+          $windowCondition = $windowType
 
           function Get-AppWindow([string]$title, [int]$timeoutSeconds = 10) {
             $until = (Get-Date).AddSeconds($timeoutSeconds)
@@ -176,6 +181,59 @@ jobs:
               Click-Button $main $item.Button
               Assert-Text $main $item.Title
             }
+
+            Click-Button $main "Work queue"
+            Assert-Text $main "Work queue"
+            Assert-Text $main "Nothing on your list yet"
+            if ($null -eq (Find-Button $main "Add reminder")) { throw "Work queue screen missing 'Add reminder' button." }
+            Click-Button $main "Add reminder"
+            $reminderDialog = Get-AppWindow "New personal reminder"
+            if ($null -eq (Find-Button $reminderDialog "Save reminder")) { throw "Reminder dialog missing 'Save reminder' button." }
+            if ($null -eq (Find-Button $reminderDialog "Cancel")) { throw "Reminder dialog missing 'Cancel' button." }
+            $titleCondition = [System.Windows.Automation.PropertyCondition]::new(
+              [System.Windows.Automation.AutomationElement]::NameProperty, "Reminder title")
+            $titleBox = $reminderDialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $titleCondition)
+            if ($null -eq $titleBox) { throw "Reminder dialog missing its accessible title field." }
+            $titleBox.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern).SetValue("Weekly workspace cleanup")
+            Click-Button $reminderDialog "Save reminder"
+            $main = Get-AppWindow "KKA Desk"
+            $until = (Get-Date).AddSeconds(5)
+            do {
+              $reminder = $main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,
+                [System.Windows.Automation.PropertyCondition]::new(
+                  [System.Windows.Automation.AutomationElement]::NameProperty, "Weekly workspace cleanup"))
+              if ($null -eq $reminder) { Start-Sleep -Milliseconds 200 }
+            } while ($null -eq $reminder -and (Get-Date) -lt $until)
+            if ($null -eq $reminder) { throw "Saved personal reminder was not shown in the work queue." }
+            Write-Host "PASS: a generic personal reminder can be created and displayed."
+
+            Click-Button $main "Delete"
+            $confirmation = Get-AppWindow "Delete reminder"
+            Click-Button $confirmation "Keep reminder"
+            $until = (Get-Date).AddSeconds(5)
+            do {
+              $reminder = $main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,
+                [System.Windows.Automation.PropertyCondition]::new(
+                  [System.Windows.Automation.AutomationElement]::NameProperty, "Weekly workspace cleanup"))
+              if ($null -eq $reminder) { Start-Sleep -Milliseconds 200 }
+            } while ($null -eq $reminder -and (Get-Date) -lt $until)
+            if ($null -eq $reminder) { throw "Cancelling reminder deletion removed the reminder." }
+            Write-Host "PASS: cancelling deletion leaves the reminder unchanged."
+
+            Click-Button $main "Delete"
+            $confirmation = Get-AppWindow "Delete reminder"
+            Click-Button $confirmation "Delete reminder"
+            $until = (Get-Date).AddSeconds(5)
+            do {
+              $emptyState = $main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,
+                [System.Windows.Automation.PropertyCondition]::new(
+                  [System.Windows.Automation.AutomationElement]::NameProperty, "Nothing on your list yet"))
+              if ($null -eq $emptyState) { Start-Sleep -Milliseconds 200 }
+            } while ($null -eq $emptyState -and (Get-Date) -lt $until)
+            if ($null -eq $emptyState) { throw "Confirming deletion did not return the queue to its empty state." }
+            Write-Host "PASS: confirmed deletion removes the generic reminder and records the queue update."
+
+            Click-Button $main "Overview"
 
             Click-Button $main "Income Tax & GST"
             $tax = Get-AppWindow "Tax Automation | KKA Desk"

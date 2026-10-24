@@ -21,6 +21,7 @@
           <Button Content="Work queue" Click="Queue_Click" Margin="0,2" Padding="12" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#D5DEEA" BorderThickness="0"/>
           <TextBlock Text="ADMINISTRATION" Foreground="#8292A8" FontSize="10" FontWeight="Bold" Margin="10,28,0,12"/>
           <Button Content="Admin" Click="Admin_Click" Margin="0,2" Padding="12" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#D5DEEA" BorderThickness="0"/>
+          <Button Content="Sync with KKA Portal" Click="PortalSync_Click" Margin="0,2" Padding="12" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#D5DEEA" BorderThickness="0"/>
           <Button Content="Income Tax &amp; GST" Click="TaxAutomation_Click" Margin="0,2" Padding="12" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#D5DEEA" BorderThickness="0"/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Margin="0,24,0,0">

@@ -77,6 +77,30 @@
               </ComboBox>
             </StackPanel>
           </Border>
+          <Border Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,14,0,0">
+            <StackPanel>
+              <TextBlock Text="3. TAX PORTAL CREDENTIALS" Foreground="#D6B56D" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
+              <TextBlock Text="Saved in this Windows user's Credential Manager. Separate from the KKA portal login; credentials are not sent to Supabase." Foreground="#9AA9BC" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12"/>
+              <TextBlock Text="Income Tax portal login ID" Foreground="#9AA9BC" FontSize="11"/>
+              <TextBox x:Name="IncomeTaxLoginBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <TextBlock Text="Income Tax portal password" Foreground="#9AA9BC" FontSize="11"/>
+              <PasswordBox x:Name="IncomeTaxPasswordBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <WrapPanel Margin="0,0,0,12">
+                <Button x:Name="SaveIncomeTaxCredentialButton" Content="Save Income Tax credential" Click="SaveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#D6B56D" Foreground="#142033" BorderThickness="0"/>
+                <Button x:Name="RemoveIncomeTaxCredentialButton" Content="Remove saved" Click="RemoveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Background="#26364B" Foreground="#E7EDF5" BorderThickness="0"/>
+              </WrapPanel>
+              <Separator/>
+              <TextBlock Text="GST portal login ID" Foreground="#9AA9BC" FontSize="11" Margin="0,12,0,0"/>
+              <TextBox x:Name="GstLoginBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <TextBlock Text="GST portal password" Foreground="#9AA9BC" FontSize="11"/>
+              <PasswordBox x:Name="GstPasswordBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <WrapPanel Margin="0,0,0,10">
+                <Button x:Name="SaveGstCredentialButton" Content="Save GST credential" Click="SaveGstCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#D6B56D" Foreground="#142033" BorderThickness="0"/>
+                <Button x:Name="RemoveGstCredentialButton" Content="Remove saved" Click="RemoveGstCredential_Click" IsEnabled="False" Padding="10,7" Background="#26364B" Foreground="#E7EDF5" BorderThickness="0"/>
+              </WrapPanel>
+              <TextBlock x:Name="CredentialStatusText" Text="Credentials unavailable until a live portal profile is selected." Foreground="#9AA9BC" FontSize="11" TextWrapping="Wrap"/>
+            </StackPanel>
+          </Border>
         </StackPanel>
       </ScrollViewer>
       <Grid Grid.Column="1">

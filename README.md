@@ -4,7 +4,7 @@ Private Windows-first desktop workspace for Kamal Kuldeep & Associates (KKA).
 
 ## Current milestone
 
-The repository contains the initial WPF solution and KKA-branded workspace shell, plus architecture, phased delivery, and security guardrail documents. The shell is still a **non-production foundation preview**. A read-only portal-sync window now supports the existing KKA sign-in/OTP gate and loads active family/profile associations for administrators; other modules remain placeholders.
+The repository contains the initial WPF solution and KKA-branded workspace shell, plus architecture, phased delivery, and security guardrail documents. The shell is still a **non-production foundation preview**. A portal-sync window supports the existing KKA sign-in/OTP gate and loads active family/profile associations for administrators. Selected profiles can be passed into the tax preview, where profile-specific Income Tax and GST credentials can be saved to Windows Credential Manager; government portal downloads and document punching remain disabled.
 
 ## Planned first release
 
@@ -35,4 +35,4 @@ GitHub Actions builds on Windows with warnings-as-errors, XAML/XML parsing, merg
 
 ## Not production-ready yet
 
-The application has not yet been compiled or tested in a Windows environment. The portal-sync path is implemented but has not yet passed live credential/OTP acceptance testing. Due-date synchronization, document handling, tax automation execution, and the remaining modules are not yet connected. Do not use it with production client data until security review and acceptance testing are complete.
+The application compiles in GitHub's Windows CI and validates XAML/XML. The portal-sync path has not yet passed live credential/OTP acceptance testing on KKA's actual account, and credential-vault save/remove operations still need an authorized Windows pilot. Due-date synchronization, document handling, tax automation execution, and the remaining modules are not yet connected. Do not use it with production client data until security review and acceptance testing are complete.

@@ -1,4 +1,4 @@
-name: Windows build and static checks
+name: Build, test and package KKA Desk for Windows
 
 on:
   push:
@@ -11,20 +11,24 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Compile, validate XAML and check source
+  build-test-package:
+    name: Build, validate, smoke-test and package Windows x64 EXE
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up .NET
+
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+
       - name: Restore
         run: dotnet restore Kka.Desk.sln
-      - name: Build
+
+      - name: Build with warnings as errors
         run: dotnet build Kka.Desk.sln --configuration Release --no-restore -warnaserror
+
       - name: Validate XAML and project XML
         shell: pwsh
         run: |
@@ -33,6 +37,7 @@ jobs:
             [xml]$parsed = Get-Content $_.FullName -Raw
             Write-Host "XML OK: $($_.FullName)"
           }
+
       - name: Ensure no merge-conflict markers
         shell: pwsh
         run: |
@@ -43,11 +48,69 @@ jobs:
             $matches | ForEach-Object { Write-Error "$($_.Path):$($_.LineNumber) conflict marker" }
             exit 1
           }
+
+      - name: Publish self-contained single-file EXE
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          dotnet publish src/Kka.Desk/Kka.Desk.csproj --configuration Release --runtime win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false --output artifacts/KKA-Desk-Windows-x64
+
+          $exe = "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe"
+          if (-not (Test-Path $exe)) {
+            throw "Publish did not produce Kka.Desk.exe"
+          }
+          if ((Get-Item $exe).Length -lt 100000) {
+            throw "Published EXE is unexpectedly small; refusing to package it."
+          }
+
+          @"
+          KKA Desk - Windows x64 preview
+          =================================
+          This is a self-contained preview build. It does not require a separately installed .NET runtime.
+          Extract this ZIP and run Kka.Desk.exe.
+
+          Important:
+          - This is a development preview, not a production-approved client-data application.
+          - Government portal downloads, filing, signing and document punching are not enabled.
+          - Do not use real client credentials until the Windows credential-vault and portal authentication flows have passed an authorized pilot.
+          - Close the application before deleting or replacing the EXE.
+          "@ | Set-Content "artifacts/KKA-Desk-Windows-x64/README.txt" -Encoding UTF8
+
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash
+          "SHA256  $hash  Kka.Desk.exe" | Set-Content "artifacts/KKA-Desk-Windows-x64/SHA256SUMS.txt" -Encoding ASCII
+          Write-Host "EXE size: $((Get-Item $exe).Length) bytes"
+          Write-Host "SHA256: $hash"
+
+      - name: Smoke-test EXE startup
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe").Path
+          $process = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 8
+          $process.Refresh()
+          if ($process.HasExited) {
+            throw "KKA Desk exited during the startup smoke test (exit code $($process.ExitCode))."
+          }
+          Stop-Process -Id $process.Id -Force
+          Write-Host "Startup smoke test passed: process stayed alive for 8 seconds."
+
+      - name: Upload downloadable Windows EXE package
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: KKA-Desk-Windows-x64
+          path: artifacts/KKA-Desk-Windows-x64/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 9
+
       - name: Publish build summary
         if: always()
         shell: pwsh
         run: |
           "KKA Desk CI ran on commit $env:GITHUB_SHA." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "Windows x64 package is produced on pushes to main and manual workflow runs." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
 
   codeql:
     name: CodeQL security analysis
@@ -63,7 +126,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
-      - name: Set up .NET
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x

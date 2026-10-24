@@ -37,11 +37,11 @@ dotnet restore Kka.Desk.sln
 dotnet build Kka.Desk.sln --configuration Release
 ```
 
-GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and mocked OTP/role-gate tests. CodeQL C# analysis runs in a separate workflow so it cannot block the Windows download artifact.
+GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and Windows UI Automation checks for navigation and disabled live-tax actions. CodeQL C# analysis runs in a separate workflow so it cannot block the Windows download artifact.
 
 ## Not production-ready yet
 
-The application compiles in GitHub's Windows CI and validates XAML/XML. The portal-sync path has not yet passed live credential/OTP acceptance testing on KKA's actual account, and credential-vault save/remove operations still need an authorized Windows pilot. Due-date synchronization, document handling, tax automation execution, and the remaining modules are not yet connected. Do not use it with production client data until security review and acceptance testing are complete.
+The application compiles in GitHub's Windows CI, validates XAML/XML, passes 15 dummy-only integration checks, and passes automated navigation/safety-control checks on a hosted Windows runner. The portal-sync path has not yet passed live credential/OTP acceptance testing on KKA's actual account, and credential-vault save/remove operations still need an authorized Windows pilot. Due-date synchronization, document handling, tax automation execution, and the remaining modules are not yet connected. Do not use it with production client data until security review and acceptance testing are complete.
 
 
 ## Download a ready-to-run Windows preview
@@ -55,4 +55,4 @@ Every push to `main` and manual workflow run attempts to create a self-contained
 
 GitHub Actions artifacts are retained for 14 days. A permanent GitHub Release could not be created by the current Actions token because GitHub returned a 403 permission error; the workflow does not attempt to bypass that restriction. Use the Actions link above for tested builds.
 
-The Windows workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, dummy-only Windows Credential Manager save/isolation/removal tests, mocked OTP and role-gate tests, a self-contained single-file publish, and an 8-second process-startup smoke test. CodeQL runs separately on pushes, pull requests, manual requests, and a weekly schedule. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.
+The Windows workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, dummy-only Windows Credential Manager save/isolation/removal tests, mocked OTP and role-gate tests, a self-contained single-file publish, and an 8-second process-startup smoke test, Windows UI Automation navigation checks, and verification that tax downloads and document punching remain disabled. CodeQL runs separately on pushes, pull requests, manual requests, and a weekly schedule, with findings uploaded to GitHub code scanning when repository permissions/settings allow. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.

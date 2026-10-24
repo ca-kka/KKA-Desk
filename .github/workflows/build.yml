@@ -12,10 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-test-package:
+    permissions:
+      contents: read
     name: Build, validate, smoke-test and package Windows x64 EXE
     runs-on: windows-latest
     steps:
@@ -113,42 +115,6 @@ jobs:
           retention-days: 14
           compression-level: 9
 
-      - name: Ensure only the latest main commit is released
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        id: latest
-        shell: pwsh
-        run: |
-          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
-          $latest = (git rev-parse refs/remotes/origin/main).Trim()
-          if ($latest -eq $env:GITHUB_SHA) {
-            "is_latest=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "This run matches the current main branch head."
-          } else {
-            "is_latest=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "A newer main commit exists; skipping release publication."
-          }
-
-      - name: Publish latest tested Windows preview release
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.latest.outputs.is_latest == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: preview-${{ github.run_number }}
-          name: KKA Desk Windows Preview #${{ github.run_number }}
-          target_commitish: ${{ github.sha }}
-          body: |
-            Automated Windows x64 preview for KKA Desk.
-
-            Build, XAML/XML checks, Windows Credential Manager isolation tests, and an 8-second startup smoke test passed on the GitHub-hosted Windows runner for this release.
-
-            This is a development preview, not a production-approved client-data application. Portal OTP acceptance, live profile authorization, tax-portal downloads, filing/signing, and document punching are not certified by this build.
-          prerelease: false
-          make_latest: true
-          overwrite_files: true
-          files: |
-            artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe
-            artifacts/KKA-Desk-Windows-x64/README.txt
-            artifacts/KKA-Desk-Windows-x64/SHA256SUMS.txt
-
       - name: Publish build summary
         if: always()
         shell: pwsh
@@ -180,3 +146,58 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           upload: false
+
+  publish-release:
+    name: Publish only after build, Windows tests, startup smoke test and CodeQL pass
+    needs: [build-test-package, codeql]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.build-test-package.result == 'success' && needs.codeql.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download tested Windows package
+        uses: actions/download-artifact@v4
+        with:
+          name: KKA-Desk-Windows-x64
+          path: artifacts/KKA-Desk-Windows-x64
+
+      - name: Ensure only the latest main commit is released
+        id: latest
+        shell: bash
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          LATEST="$(git rev-parse refs/remotes/origin/main)"
+          if [ "$LATEST" = "$GITHUB_SHA" ]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+            echo "This run matches the current main branch head."
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+            echo "A newer main commit exists; skipping release publication."
+          fi
+
+      - name: Publish latest tested Windows preview release
+        if: steps.latest.outputs.is_latest == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: preview-${{ github.run_number }}
+          name: KKA Desk Windows Preview #${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          body: |
+            Automated Windows x64 preview for KKA Desk.
+
+            The Windows build, XAML/XML checks, Windows Credential Manager isolation tests using dummy credentials, executable startup smoke test, and CodeQL analysis passed for this release.
+
+            This is a development preview, not a production-approved client-data application. Live portal OTP acceptance, live profile authorization, tax-portal downloads, filing/signing, and document punching are not certified by this build.
+          prerelease: false
+          make_latest: true
+          overwrite_files: true
+          files: |
+            artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe
+            artifacts/KKA-Desk-Windows-x64/README.txt
+            artifacts/KKA-Desk-Windows-x64/SHA256SUMS.txt

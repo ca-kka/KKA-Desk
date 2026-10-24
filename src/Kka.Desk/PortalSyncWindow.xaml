@@ -41,9 +41,13 @@
       </Grid>
     </Border>
     <Grid Grid.Row="3">
-      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
       <TextBlock x:Name="StatusText" Grid.Row="0" Text="Not connected. Sign in to run a live read-only sync." Foreground="#9AA9BC" TextWrapping="Wrap" Margin="0,0,0,12"/>
-      <DataGrid x:Name="ProfilesGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+      <DockPanel Grid.Row="1" Margin="0,0,0,10">
+        <TextBlock Text="Select a member profile, then open tax automation. Profile selection does not download or change any data." Foreground="#9AA9BC" VerticalAlignment="Center" TextWrapping="Wrap"/>
+        <Button x:Name="OpenTaxButton" DockPanel.Dock="Right" Content="Use selected profile for tax automation" Click="OpenTax_Click" IsEnabled="False" Padding="14,9" Margin="12,0,0,0" Background="#D6B56D" Foreground="#142033" BorderThickness="0" FontWeight="Bold"/>
+      </DockPanel>
+      <DataGrid x:Name="ProfilesGrid" Grid.Row="2" SelectionMode="Single" SelectionUnit="FullRow" SelectionChanged="ProfilesGrid_SelectionChanged" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                 Background="#121E30" Foreground="#E6EDF6" RowBackground="#15243A" AlternatingRowBackground="#1A2A40"
                 BorderBrush="#30435C" HeadersVisibility="Column" GridLinesVisibility="Horizontal">
         <DataGrid.Columns>

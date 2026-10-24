@@ -22,6 +22,11 @@ public partial class TaxAutomationWindow : Window
         ProfileNameBox.Text = profile.DisplayName ?? profile.LegalName ?? string.Empty;
         PanBox.Text = profile.Pan ?? string.Empty;
         GstinBox.Text = profile.Gstin ?? string.Empty;
+        FamilyAccountIdBox.IsReadOnly = true;
+        ProfileIdBox.IsReadOnly = true;
+        ProfileNameBox.IsReadOnly = true;
+        GstinBox.IsReadOnly = true;
+        ProfileTypeBox.IsEnabled = false;
         ProfileTypeBox.SelectedIndex = profile.IsPrimary ? 0 : 1;
         IncomeTaxEnabled.IsChecked = !string.IsNullOrWhiteSpace(profile.Pan);
         GstEnabled.IsChecked = !string.IsNullOrWhiteSpace(profile.Gstin);

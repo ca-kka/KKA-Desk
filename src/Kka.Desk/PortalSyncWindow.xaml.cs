@@ -1,7 +1,5 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using System;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
@@ -104,11 +102,30 @@ public partial class PortalSyncWindow : Window
         StatusText.Text = "Checking active staff/admin permissions and reading family profiles…";
         var result = await _syncService.LoadDirectoryAsync(_session.AccessToken, portalMfaSatisfied: true);
         ProfilesGrid.ItemsSource = result.Profiles;
+        ProfilesGrid.SelectedItem = null;
+        OpenTaxButton.IsEnabled = false;
         StatusText.Text = $"Connected as {result.Role}. Loaded {result.Profiles.Count} active profile association(s). Last sync: {result.SyncedAtUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}.";
         // Do not retain the password after a successful authentication. The access
         // token remains in memory only while this window is open.
         _pendingPassword = null;
         PasswordBox.Clear();
+    }
+
+    private void ProfilesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        OpenTaxButton.IsEnabled = ProfilesGrid.SelectedItem is PortalFamilyProfile;
+    }
+
+    private void OpenTax_Click(object sender, RoutedEventArgs e)
+    {
+        if (ProfilesGrid.SelectedItem is not PortalFamilyProfile profile)
+        {
+            StatusText.Text = "Select a member profile first.";
+            return;
+        }
+
+        var taxWindow = new TaxAutomationWindow(profile) { Owner = this };
+        taxWindow.ShowDialog();
     }
 
     private void SetBusy(bool busy, string message)

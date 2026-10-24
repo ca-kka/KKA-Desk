@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: kka-desk-${{ github.workflow }}-${{ github.ref }}
+  group: kka-desk-windows-build-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

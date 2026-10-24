@@ -4,7 +4,7 @@
 
 **[Download the latest Windows x64 build from GitHub Actions](https://github.com/ca-kka/KKA-Desk/actions?query=branch%3Amain)** · [View the source and test history](https://github.com/ca-kka/KKA-Desk/actions)
 
-This is a self-contained Windows preview. Open the newest successful **Build, test and package KKA Desk for Windows** run, then download `KKA-Desk-Windows-x64` from its Artifacts section and extract the ZIP. You do not need to download source code or install the .NET runtime. Because this repository is private, you must be signed in to GitHub with access to KKA-Desk.
+This is a self-contained Windows preview. Open the newest successful **Build, test and package KKA Desk for Windows** run, then download `KKA-Desk-Windows-x64` from its Artifacts section and extract the ZIP. You do not need to download source code or install the .NET runtime. The source repository is public. GitHub may still require sign-in to download workflow artifacts, depending on artifact access policy.
 
 Private Windows-first desktop workspace for Kamal Kuldeep & Associates (KKA).
 
@@ -48,7 +48,7 @@ The application compiles in GitHub's Windows CI and validates XAML/XML. The port
 
 Every push to `main` and manual workflow run attempts to create a self-contained Windows x64 EXE package. You do not need to install the .NET runtime to run that package.
 
-1. Open [KKA Desk Actions](https://github.com/ca-kka/KKA-Desk/actions?query=branch%3Amain) while signed in to an account with access to this private repository.
+1. Open [KKA Desk Actions](https://github.com/ca-kka/KKA-Desk/actions?query=branch%3Amain). Sign in to GitHub if it requires authentication to download the artifact.
 2. Open the newest successful **Build, test and package KKA Desk for Windows** run.
 3. Download `KKA-Desk-Windows-x64` from Artifacts, extract it, and run `Kka.Desk.exe`.
 4. Optionally verify the EXE against `SHA256SUMS.txt` in the ZIP before running it.

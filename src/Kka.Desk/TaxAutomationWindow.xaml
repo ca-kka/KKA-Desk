@@ -32,6 +32,8 @@
               <TextBox x:Name="ProfileIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Existing member profile ID; tax documents and settings are scoped to this profile."/>
               <TextBlock Text="Selected member / profile name" Foreground="#9AA9BC" FontSize="11"/>
               <TextBox x:Name="ProfileNameBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White"/>
+              <TextBlock Text="PAN (from selected portal profile)" Foreground="#9AA9BC" FontSize="11"/>
+              <TextBox x:Name="PanBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" IsReadOnly="True"/>
               <TextBlock Text="Relationship / profile type" Foreground="#9AA9BC" FontSize="11"/>
               <ComboBox x:Name="ProfileTypeBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0">
                 <ComboBoxItem Content="Primary holder"/>

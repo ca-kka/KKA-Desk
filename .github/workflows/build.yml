@@ -105,6 +105,104 @@ jobs:
           Stop-Process -Id $process.Id -Force
           Write-Host "Startup smoke test passed: process stayed alive for 8 seconds."
 
+      - name: Exercise desktop navigation and safety controls in Windows UI
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+
+          $exe = (Resolve-Path "artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe").Path
+          $process = Start-Process -FilePath $exe -PassThru
+          $desktop = [System.Windows.Automation.AutomationElement]::RootElement
+          $windowType = [System.Windows.Automation.PropertyCondition]::new(
+            [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+            [System.Windows.Automation.ControlType]::Window)
+          $processCondition = [System.Windows.Automation.PropertyCondition]::new(
+            [System.Windows.Automation.AutomationElement]::ProcessIdProperty, $process.Id)
+          $windowCondition = [System.Windows.Automation.AndCondition]::new($windowType, $processCondition)
+
+          function Get-AppWindow([string]$title, [int]$timeoutSeconds = 10) {
+            $until = (Get-Date).AddSeconds($timeoutSeconds)
+            do {
+              $all = $desktop.FindAll([System.Windows.Automation.TreeScope]::Descendants, $windowCondition)
+              foreach ($candidate in $all) {
+                if ($candidate.Current.Name -eq $title) { return $candidate }
+              }
+              Start-Sleep -Milliseconds 250
+            } while ((Get-Date) -lt $until)
+            throw "Could not find app window '$title'."
+          }
+
+          function Find-Button($window, [string]$name) {
+            $nameCondition = [System.Windows.Automation.PropertyCondition]::new(
+              [System.Windows.Automation.AutomationElement]::NameProperty, $name)
+            $typeCondition = [System.Windows.Automation.PropertyCondition]::new(
+              [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+              [System.Windows.Automation.ControlType]::Button)
+            $condition = [System.Windows.Automation.AndCondition]::new($nameCondition, $typeCondition)
+            return $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+          }
+
+          function Click-Button($window, [string]$name) {
+            $button = Find-Button $window $name
+            if ($null -eq $button) { throw "Button '$name' was not found." }
+            $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+            Start-Sleep -Milliseconds 300
+          }
+
+          function Assert-Text($window, [string]$name) {
+            $nameCondition = [System.Windows.Automation.PropertyCondition]::new(
+              [System.Windows.Automation.AutomationElement]::NameProperty, $name)
+            $typeCondition = [System.Windows.Automation.PropertyCondition]::new(
+              [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+              [System.Windows.Automation.ControlType]::Text)
+            $condition = [System.Windows.Automation.AndCondition]::new($nameCondition, $typeCondition)
+            $text = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+            if ($null -eq $text) { throw "Expected page text '$name' was not found." }
+            Write-Host "PASS: main navigation changed page to '$name'."
+          }
+
+          try {
+            $main = Get-AppWindow "KKA Desk"
+            foreach ($item in @(
+              @{ Button = "Documents"; Title = "Documents" },
+              @{ Button = "Queries"; Title = "Queries" },
+              @{ Button = "Client directory"; Title = "Client directory" },
+              @{ Button = "Work queue"; Title = "Work queue" },
+              @{ Button = "Admin"; Title = "Administration" },
+              @{ Button = "Overview"; Title = "Good day." }
+            )) {
+              Click-Button $main $item.Button
+              Assert-Text $main $item.Title
+            }
+
+            Click-Button $main "Income Tax & GST"
+            $tax = Get-AppWindow "Tax Automation | KKA Desk"
+            foreach ($control in @("Build job preview", "Run downloads", "Punch documents")) {
+              if ($null -eq (Find-Button $tax $control)) { throw "Tax screen missing '$control' button." }
+            }
+            if ((Find-Button $tax "Run downloads").Current.IsEnabled) {
+              throw "Safety failure: Run downloads must remain disabled in preview."
+            }
+            if ((Find-Button $tax "Punch documents").Current.IsEnabled) {
+              throw "Safety failure: Punch documents must remain disabled in preview."
+            }
+            Write-Host "PASS: tax automation window opens and live download/punch actions remain disabled."
+            $tax.GetCurrentPattern([System.Windows.Automation.WindowPattern]::Pattern).Close()
+
+            $main = Get-AppWindow "KKA Desk"
+            Click-Button $main "Sync with KKA Portal"
+            $portal = Get-AppWindow "KKA Portal Sync"
+            if ($null -eq (Find-Button $portal "Sign in")) { throw "Portal sync screen missing Sign in button." }
+            Write-Host "PASS: portal sync screen opens; no credentials were entered and no request was sent."
+            $portal.GetCurrentPattern([System.Windows.Automation.WindowPattern]::Pattern).Close()
+            Write-Host "PASS: Windows UI navigation and safety-control checks completed."
+          }
+          finally {
+            if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+          }
+
       - name: Upload downloadable Windows EXE package
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4

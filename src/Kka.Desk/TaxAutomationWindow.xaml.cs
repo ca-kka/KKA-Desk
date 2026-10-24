@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Kka.Desk.Services;
 
 namespace Kka.Desk;
 
@@ -11,6 +12,21 @@ public partial class TaxAutomationWindow : Window
     public TaxAutomationWindow()
     {
         InitializeComponent();
+    }
+
+    public TaxAutomationWindow(PortalFamilyProfile profile) : this()
+    {
+        ArgumentNullException.ThrowIfNull(profile);
+        FamilyAccountIdBox.Text = profile.FamilyAccountId;
+        ProfileIdBox.Text = profile.ProfileId;
+        ProfileNameBox.Text = profile.DisplayName ?? profile.LegalName ?? string.Empty;
+        PanBox.Text = profile.Pan ?? string.Empty;
+        GstinBox.Text = profile.Gstin ?? string.Empty;
+        ProfileTypeBox.SelectedIndex = profile.IsPrimary ? 0 : 1;
+        IncomeTaxEnabled.IsChecked = !string.IsNullOrWhiteSpace(profile.Pan);
+        GstEnabled.IsChecked = !string.IsNullOrWhiteSpace(profile.Gstin);
+        if (string.IsNullOrWhiteSpace(profile.Pan))
+            AuditCase.IsChecked = false;
     }
 
     private void Preview_Click(object sender, RoutedEventArgs e)
@@ -22,7 +38,7 @@ public partial class TaxAutomationWindow : Window
             string.IsNullOrWhiteSpace(profileId) ||
             string.IsNullOrWhiteSpace(profileName))
         {
-            MessageBox.Show(this, "Enter the existing family/account ID, selected member profile ID, and profile name.",
+            MessageBox.Show(this, "Select a profile from the live portal sync or enter the existing family/account ID, member profile ID, and profile name.",
                 "Family profile details required", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -37,7 +53,9 @@ public partial class TaxAutomationWindow : Window
 
         if (incomeTaxEnabled)
         {
-            if (ItrDocs.IsChecked == true)
+            if (string.IsNullOrWhiteSpace(PanBox.Text))
+                tasks.Add(new TaxTaskPreview("Income Tax", "ITR return / acknowledgement", yearLabel, "Blocked — PAN not loaded"));
+            else if (ItrDocs.IsChecked == true)
                 tasks.Add(new TaxTaskPreview("Income Tax", "ITR return / acknowledgement", yearLabel, "Preview only"));
             if (audit && AuditDocs.IsChecked == true)
                 tasks.Add(new TaxTaskPreview("Income Tax", "Audit report / available attachments", yearLabel, "Case check required"));
@@ -47,13 +65,17 @@ public partial class TaxAutomationWindow : Window
 
         if (gstEnabled && (Gstr1Docs.IsChecked == true || Gstr3bDocs.IsChecked == true))
         {
-            var periods = GetPeriods(quarterly, scope);
-            foreach (var period in periods)
+            if (string.IsNullOrWhiteSpace(GstinBox.Text))
+                tasks.Add(new TaxTaskPreview("GST", "GST return documents", yearLabel, "Blocked — GSTIN not loaded"));
+            else
             {
-                if (Gstr1Docs.IsChecked == true)
-                    tasks.Add(new TaxTaskPreview("GST", "GSTR-1", period, "Preview only"));
-                if (Gstr3bDocs.IsChecked == true)
-                    tasks.Add(new TaxTaskPreview("GST", "GSTR-3B", period, "Preview only"));
+                foreach (var period in GetPeriods(quarterly, scope))
+                {
+                    if (Gstr1Docs.IsChecked == true)
+                        tasks.Add(new TaxTaskPreview("GST", "GSTR-1", period, "Preview only"));
+                    if (Gstr3bDocs.IsChecked == true)
+                        tasks.Add(new TaxTaskPreview("GST", "GSTR-3B", period, "Preview only"));
+                }
             }
         }
 
@@ -64,20 +86,17 @@ public partial class TaxAutomationWindow : Window
         var gstPath = $"{root}/GST/{SafeSegment(yearLabel)}";
         var profileType = (ProfileTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Profile";
         PunchPreviewText.Text = $"Family/account: {familyAccountId}\nSelected profile: {profileName} ({profileId}) — {profileType}\nIncome Tax destination: {incomePath}\nGST destination: {gstPath}\n\nThis profile is isolated from other family members. Paths are illustrative only; no files are created or moved.";
-        StatusText.Text = $"Preview created for {tasks.Count} task(s). Portal access and Punch are disabled in this build.";
+        StatusText.Text = $"Preview created for {tasks.Count} task(s). Portal downloads and Punch remain disabled.";
     }
 
     private static IEnumerable<string> GetPeriods(bool quarterly, string scope)
     {
         if (scope.StartsWith("Latest", StringComparison.OrdinalIgnoreCase))
             return new[] { quarterly ? "Latest applicable quarter" : "Latest applicable month" };
-
         if (scope.StartsWith("Select", StringComparison.OrdinalIgnoreCase))
             return new[] { "Manual period selection required" };
-
         if (quarterly)
             return new[] { "Apr–Jun", "Jul–Sep", "Oct–Dec", "Jan–Mar" };
-
         return new[] { "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar" };
     }
 

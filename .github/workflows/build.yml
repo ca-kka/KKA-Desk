@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-test-package:
@@ -81,6 +81,10 @@ jobs:
           Write-Host "EXE size: $((Get-Item $exe).Length) bytes"
           Write-Host "SHA256: $hash"
 
+      - name: Test Windows Credential Manager isolation and cleanup
+        if: github.event_name != 'pull_request'
+        run: dotnet run --project tests/Kka.Desk.CredentialVaultTests/Kka.Desk.CredentialVaultTests.csproj --configuration Release --no-restore
+
       - name: Smoke-test EXE startup
         if: github.event_name != 'pull_request'
         shell: pwsh
@@ -104,6 +108,27 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 9
+
+      - name: Publish latest tested Windows preview release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: preview-${{ github.run_number }}
+          name: KKA Desk Windows Preview #${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          body: |
+            Automated Windows x64 preview for KKA Desk.
+
+            Build, XAML/XML checks, Windows Credential Manager isolation tests, and an 8-second startup smoke test passed on the GitHub-hosted Windows runner for this release.
+
+            This is a development preview, not a production-approved client-data application. Portal OTP acceptance, live profile authorization, tax-portal downloads, filing/signing, and document punching are not certified by this build.
+          prerelease: false
+          make_latest: true
+          overwrite_files: true
+          files: |
+            artifacts/KKA-Desk-Windows-x64/Kka.Desk.exe
+            artifacts/KKA-Desk-Windows-x64/README.txt
+            artifacts/KKA-Desk-Windows-x64/SHA256SUMS.txt
 
       - name: Publish build summary
         if: always()

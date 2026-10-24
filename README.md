@@ -1,5 +1,11 @@
 # KKA Desk
 
+## Download KKA Desk for Windows
+
+**[Download the latest tested Windows x64 EXE](https://github.com/ca-kka/KKA-Desk/releases/latest/download/Kka.Desk.exe)** · [View release notes and SHA-256 checksum](https://github.com/ca-kka/KKA-Desk/releases/latest)
+
+This is a self-contained Windows preview. Download the EXE directly from the latest release; you do not need to download source code or install the .NET runtime. Because this repository is private, you must be signed in to GitHub with access to KKA-Desk.
+
 Private Windows-first desktop workspace for Kamal Kuldeep & Associates (KKA).
 
 ## Current milestone
@@ -31,7 +37,7 @@ dotnet restore Kka.Desk.sln
 dotnet build Kka.Desk.sln --configuration Release
 ```
 
-GitHub Actions builds on Windows with warnings-as-errors, XAML/XML parsing, merge-conflict checks, and CodeQL C# analysis.
+GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, an executable startup smoke test, and CodeQL C# analysis. Successful main-branch builds publish the tested EXE and checksum as a GitHub Release.
 
 ## Not production-ready yet
 
@@ -42,11 +48,10 @@ The application compiles in GitHub's Windows CI and validates XAML/XML. The port
 
 Every push to `main` and manual workflow run attempts to create a self-contained Windows x64 EXE package. You do not need to install the .NET runtime to run that package.
 
-1. Open [KKA Desk Actions](https://github.com/ca-kka/KKA-Desk/actions) and sign in with a GitHub account that can access this private repository.
-2. Open the latest successful **Build, test and package KKA Desk for Windows** run.
-3. Under **Artifacts**, download `KKA-Desk-Windows-x64`.
-4. Extract the ZIP and run `Kka.Desk.exe`. Review `README.txt` and `SHA256SUMS.txt` included in the package.
+1. Open the [latest KKA Desk release](https://github.com/ca-kka/KKA-Desk/releases/latest) while signed in to an account with access to this private repository.
+2. Download `Kka.Desk.exe` directly, or download the complete package from the linked GitHub Actions run.
+3. Optionally verify the EXE against `SHA256SUMS.txt` from that same release before running it.
 
-Artifacts are retained for 14 days. If the run fails or the artifact is missing, do not use an older build as if it were current; open the failed run and review its logs.
+GitHub Releases keep the latest published preview available until replaced by a later successful build. If the latest build fails, the release step is skipped; check the [Actions history](https://github.com/ca-kka/KKA-Desk/actions) rather than assuming the older release contains the newest code.
 
 The workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, a self-contained single-file publish, an 8-second process-startup smoke test, and local CodeQL analysis. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.

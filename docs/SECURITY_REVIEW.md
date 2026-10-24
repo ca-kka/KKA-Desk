@@ -17,10 +17,10 @@ This is a planning baseline, not a completed security audit.
 - Add authorization tests for inactive users, clients, unassigned clients, staff, and admins.
 
 ## Current status
-- Repository is private.
+- Repository is public; avoid committing secrets, real client data, or environment-specific credentials.
 - No production portal or Supabase resources have been changed.
 - Desktop sign-in/OTP flow is implemented against the portal's existing OTP function, but live acceptance testing and session refresh/revocation handling remain incomplete; not production-approved.
-- Windows CI build and XAML/XML validation pass for the portal/profile preview path. The new Credential Manager UI/vault is awaiting its own completed CI run and Windows pilot.
+- Windows CI build, XAML/XML validation, 15 dummy-only integration checks, startup smoke test, and Windows UI Automation navigation/safety checks have passed on the hosted Windows runner. This does not replace live acceptance testing or a dedicated Windows pilot.
 - No sensitive modules should be enabled until the requirements above pass review.
 
 ## Open questions

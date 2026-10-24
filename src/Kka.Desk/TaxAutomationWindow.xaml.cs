@@ -9,6 +9,9 @@ namespace Kka.Desk;
 
 public partial class TaxAutomationWindow : Window
 {
+    private readonly WindowsCredentialVault _credentialVault = new();
+    private PortalFamilyProfile? _profile;
+
     public TaxAutomationWindow()
     {
         InitializeComponent();
@@ -17,6 +20,7 @@ public partial class TaxAutomationWindow : Window
     public TaxAutomationWindow(PortalFamilyProfile profile) : this()
     {
         ArgumentNullException.ThrowIfNull(profile);
+        _profile = profile;
         FamilyAccountIdBox.Text = profile.FamilyAccountId;
         ProfileIdBox.Text = profile.ProfileId;
         ProfileNameBox.Text = profile.DisplayName ?? profile.LegalName ?? string.Empty;
@@ -32,6 +36,118 @@ public partial class TaxAutomationWindow : Window
         GstEnabled.IsChecked = !string.IsNullOrWhiteSpace(profile.Gstin);
         if (string.IsNullOrWhiteSpace(profile.Pan))
             AuditCase.IsChecked = false;
+        ConfigureCredentialControls();
+    }
+
+    private void ConfigureCredentialControls()
+    {
+        var hasProfile = _profile is not null;
+        IncomeTaxLoginBox.IsEnabled = hasProfile && !string.IsNullOrWhiteSpace(_profile?.Pan);
+        IncomeTaxPasswordBox.IsEnabled = IncomeTaxLoginBox.IsEnabled;
+        SaveIncomeTaxCredentialButton.IsEnabled = IncomeTaxLoginBox.IsEnabled;
+        GstLoginBox.IsEnabled = hasProfile && !string.IsNullOrWhiteSpace(_profile?.Gstin);
+        GstPasswordBox.IsEnabled = GstLoginBox.IsEnabled;
+        SaveGstCredentialButton.IsEnabled = GstLoginBox.IsEnabled;
+        if (_profile is null)
+        {
+            CredentialStatusText.Text = "Select a profile through live portal sync before managing credentials.";
+            return;
+        }
+
+        try
+        {
+            var incomeTaxSaved = !string.IsNullOrWhiteSpace(_profile.Pan) &&
+                _credentialVault.Exists(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX");
+            var gstSaved = !string.IsNullOrWhiteSpace(_profile.Gstin) &&
+                _credentialVault.Exists(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin);
+            RemoveIncomeTaxCredentialButton.IsEnabled = incomeTaxSaved;
+            RemoveGstCredentialButton.IsEnabled = gstSaved;
+            CredentialStatusText.Text = $"Income Tax: {(incomeTaxSaved ? "configured" : "not configured")}. GST registration {_profile.Gstin ?? "(none)"}: {(gstSaved ? "configured" : "not configured")}. Secrets remain in Windows Credential Manager.";
+        }
+        catch
+        {
+            RemoveIncomeTaxCredentialButton.IsEnabled = false;
+            RemoveGstCredentialButton.IsEnabled = false;
+            CredentialStatusText.Text = "Windows Credential Manager is unavailable. No credential status could be confirmed.";
+        }
+    }
+
+    private void SaveIncomeTaxCredential_Click(object sender, RoutedEventArgs e)
+    {
+        if (_profile is null || string.IsNullOrWhiteSpace(_profile.Pan))
+        {
+            CredentialStatusText.Text = "A portal-synced profile with a PAN is required.";
+            return;
+        }
+
+        try
+        {
+            _credentialVault.Save(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX", null,
+                IncomeTaxLoginBox.Text, IncomeTaxPasswordBox.Password);
+            IncomeTaxPasswordBox.Clear();
+            IncomeTaxLoginBox.Clear();
+            ConfigureCredentialControls();
+            CredentialStatusText.Text = "Income Tax credential saved to this Windows user's Credential Manager.";
+        }
+        catch
+        {
+            IncomeTaxPasswordBox.Clear();
+            CredentialStatusText.Text = "Could not save the Income Tax credential. Check the login ID, password, and Windows Credential Manager.";
+        }
+    }
+
+    private void RemoveIncomeTaxCredential_Click(object sender, RoutedEventArgs e)
+    {
+        if (_profile is null) return;
+        try
+        {
+            _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX");
+            ConfigureCredentialControls();
+            CredentialStatusText.Text = "Saved Income Tax credential removed from Windows Credential Manager.";
+        }
+        catch
+        {
+            CredentialStatusText.Text = "Could not remove the saved Income Tax credential.";
+        }
+    }
+
+    private void SaveGstCredential_Click(object sender, RoutedEventArgs e)
+    {
+        if (_profile is null || string.IsNullOrWhiteSpace(_profile.Gstin))
+        {
+            CredentialStatusText.Text = "A portal-synced profile with a GSTIN is required.";
+            return;
+        }
+
+        try
+        {
+            _credentialVault.Save(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin,
+                GstLoginBox.Text, GstPasswordBox.Password);
+            GstPasswordBox.Clear();
+            GstLoginBox.Clear();
+            ConfigureCredentialControls();
+            CredentialStatusText.Text = $"GST credential saved for registration {_profile.Gstin} in Windows Credential Manager.";
+        }
+        catch
+        {
+            GstPasswordBox.Clear();
+            CredentialStatusText.Text = "Could not save the GST credential. Check the login ID, password, and Windows Credential Manager.";
+        }
+    }
+
+    private void RemoveGstCredential_Click(object sender, RoutedEventArgs e)
+    {
+        if (_profile is null || string.IsNullOrWhiteSpace(_profile.Gstin)) return;
+        try
+        {
+            _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin);
+            ConfigureCredentialControls();
+            CredentialStatusText.Text = "Saved GST credential removed from Windows Credential Manager.";
+        }
+        catch
+        {
+            CredentialStatusText.Text = "Could not remove the saved GST credential.";
+        }
     }
 
     private void Preview_Click(object sender, RoutedEventArgs e)

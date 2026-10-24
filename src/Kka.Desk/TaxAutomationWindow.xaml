@@ -10,7 +10,7 @@
       <StackPanel>
         <TextBlock Text="ADMINISTRATION / TAX OPERATIONS" Foreground="#D6B56D" FontSize="11" FontWeight="Bold"/>
         <TextBlock Text="Income Tax &amp; GST automation" FontSize="27" FontWeight="SemiBold" Margin="0,7,0,0"/>
-        <TextBlock Text="Configure a client, preview the periods and documents, then run a controlled download and punch workflow." Foreground="#9AA9BC" FontSize="12" Margin="0,7,0,0"/>
+        <TextBlock Text="Select a family account and one member profile, then preview its tax periods, documents and destination." Foreground="#9AA9BC" FontSize="12" Margin="0,7,0,0"/>
       </StackPanel>
       <Border DockPanel.Dock="Right" Background="#332B1D" BorderBrush="#7C6535" BorderThickness="1" CornerRadius="8" Padding="12,8" VerticalAlignment="Top">
         <TextBlock Text="PREVIEW MODE — NO PORTAL ACCESS" Foreground="#F0D99F" FontSize="11" FontWeight="Bold"/>
@@ -26,10 +26,20 @@
           <Border Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,14">
             <StackPanel>
               <TextBlock Text="1. CLIENT &amp; TAX PROFILE" Foreground="#D6B56D" FontWeight="Bold" FontSize="11" Margin="0,0,0,14"/>
-              <TextBlock Text="Client ID / code" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="ClientIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Use the stable internal client ID, not a free-text folder name."/>
-              <TextBlock Text="Client display name" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="ClientNameBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White"/>
+              <TextBlock Text="Family / primary-holder account ID" Foreground="#9AA9BC" FontSize="11"/>
+              <TextBox x:Name="FamilyAccountIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Existing stable family/account ID. Do not create a new family record."/>
+              <TextBlock Text="Selected member / client profile ID" Foreground="#9AA9BC" FontSize="11"/>
+              <TextBox x:Name="ProfileIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Existing member profile ID; tax documents and settings are scoped to this profile."/>
+              <TextBlock Text="Selected member / profile name" Foreground="#9AA9BC" FontSize="11"/>
+              <TextBox x:Name="ProfileNameBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White"/>
+              <TextBlock Text="Relationship / profile type" Foreground="#9AA9BC" FontSize="11"/>
+              <ComboBox x:Name="ProfileTypeBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0">
+                <ComboBoxItem Content="Primary holder"/>
+                <ComboBoxItem Content="Family member"/>
+                <ComboBoxItem Content="Individual client"/>
+                <ComboBoxItem Content="Business / entity"/>
+              </ComboBox>
+              <TextBlock Text="Profile isolation" Foreground="#D6B56D" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12">Tax IDs, credentials, frequency and documents apply to the selected profile only. Family members do not get separate logins.</TextBlock>
               <CheckBox x:Name="IncomeTaxEnabled" Content="Income Tax enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#E7EDF5"/>
               <CheckBox x:Name="AuditCase" Content="Tax audit case (confirm per year)" Margin="0,0,0,12" Foreground="#E7EDF5"/>
               <TextBlock Text="Financial year" Foreground="#9AA9BC" FontSize="11"/>

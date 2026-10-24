@@ -37,7 +37,7 @@ dotnet restore Kka.Desk.sln
 dotnet build Kka.Desk.sln --configuration Release
 ```
 
-GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, an executable startup smoke test, and CodeQL C# analysis. Successful main-branch builds publish the tested EXE and checksum as a GitHub Release.
+GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and CodeQL C# analysis. Successful main-branch builds publish the tested EXE and checksum as a GitHub Release.
 
 ## Not production-ready yet
 
@@ -54,4 +54,4 @@ Every push to `main` and manual workflow run attempts to create a self-contained
 
 GitHub Releases keep the latest published preview available until replaced by a later successful build. If the latest build fails, the release step is skipped; check the [Actions history](https://github.com/ca-kka/KKA-Desk/actions) rather than assuming the older release contains the newest code.
 
-The workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, a self-contained single-file publish, an 8-second process-startup smoke test, and local CodeQL analysis. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.
+The workflow performs a warnings-as-errors build, XML/XAML validation, conflict-marker checks, dummy-only Windows Credential Manager save/isolation/removal tests, mocked OTP and role-gate tests, a self-contained single-file publish, an 8-second process-startup smoke test, and CodeQL analysis. Release publication waits for both the Windows test job and CodeQL job to pass. These checks do not replace live acceptance testing of portal OTP, Windows Credential Manager behavior, profile authorization, or tax portal downloads.

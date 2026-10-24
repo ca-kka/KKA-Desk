@@ -39,4 +39,10 @@ public partial class MainWindow : Window
         var window = new TaxAutomationWindow { Owner = this };
         window.ShowDialog();
     }
+
+    private void PortalSync_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new PortalSyncWindow { Owner = this };
+        window.ShowDialog();
+    }
 }

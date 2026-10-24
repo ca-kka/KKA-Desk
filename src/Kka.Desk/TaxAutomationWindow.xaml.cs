@@ -15,6 +15,7 @@ public partial class TaxAutomationWindow : Window
     public TaxAutomationWindow()
     {
         InitializeComponent();
+        Closed += TaxAutomationWindow_Closed;
     }
 
     public TaxAutomationWindow(PortalFamilyProfile profile) : this()
@@ -82,6 +83,15 @@ public partial class TaxAutomationWindow : Window
 
         try
         {
+            var exists = _credentialVault.Exists(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX");
+            if (exists && !ConfirmCredentialReplacement("Income Tax"))
+            {
+                IncomeTaxPasswordBox.Clear();
+                IncomeTaxLoginBox.Clear();
+                CredentialStatusText.Text = "The existing Income Tax credential was left unchanged.";
+                return;
+            }
+
             _credentialVault.Save(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX", null,
                 IncomeTaxLoginBox.Text, IncomeTaxPasswordBox.Password);
             IncomeTaxPasswordBox.Clear();
@@ -99,11 +109,18 @@ public partial class TaxAutomationWindow : Window
     private void RemoveIncomeTaxCredential_Click(object sender, RoutedEventArgs e)
     {
         if (_profile is null) return;
+        if (!ConfirmAction("Remove saved credential",
+                "Remove the saved Income Tax credential for the selected profile? You will need to save it again before use.",
+                "Remove credential", "Keep credential"))
+            return;
+
         try
         {
-            _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX");
+            var removed = _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "INCOME_TAX");
             ConfigureCredentialControls();
-            CredentialStatusText.Text = "Saved Income Tax credential removed from Windows Credential Manager.";
+            CredentialStatusText.Text = removed
+                ? "Saved Income Tax credential removed from Windows Credential Manager."
+                : "No saved Income Tax credential was found for this profile.";
         }
         catch
         {
@@ -121,6 +138,15 @@ public partial class TaxAutomationWindow : Window
 
         try
         {
+            var exists = _credentialVault.Exists(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin);
+            if (exists && !ConfirmCredentialReplacement("GST"))
+            {
+                GstPasswordBox.Clear();
+                GstLoginBox.Clear();
+                CredentialStatusText.Text = "The existing GST credential was left unchanged.";
+                return;
+            }
+
             _credentialVault.Save(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin,
                 GstLoginBox.Text, GstPasswordBox.Password);
             GstPasswordBox.Clear();
@@ -138,11 +164,18 @@ public partial class TaxAutomationWindow : Window
     private void RemoveGstCredential_Click(object sender, RoutedEventArgs e)
     {
         if (_profile is null || string.IsNullOrWhiteSpace(_profile.Gstin)) return;
+        if (!ConfirmAction("Remove saved credential",
+                "Remove the saved GST credential for the selected profile and registration? You will need to save it again before use.",
+                "Remove credential", "Keep credential"))
+            return;
+
         try
         {
-            _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin);
+            var removed = _credentialVault.Remove(_profile.FamilyAccountId, _profile.ProfileId, "GST", _profile.Gstin);
             ConfigureCredentialControls();
-            CredentialStatusText.Text = "Saved GST credential removed from Windows Credential Manager.";
+            CredentialStatusText.Text = removed
+                ? "Saved GST credential removed from Windows Credential Manager."
+                : "No saved GST credential was found for this profile.";
         }
         catch
         {
@@ -235,6 +268,28 @@ public partial class TaxAutomationWindow : Window
     private void Punch_Click(object sender, RoutedEventArgs e) =>
         MessageBox.Show(this, "Punch Documents will be enabled only after download verification and the approved destination adapter are implemented.",
             "Not available in preview", MessageBoxButton.OK, MessageBoxImage.Information);
+
+    private bool ConfirmCredentialReplacement(string taxSystem) => ConfirmAction(
+        "Replace saved credential",
+        $"A saved {taxSystem} credential exists for this profile. Replace it with the value you entered?",
+        "Replace credential", "Keep existing");
+
+    private bool ConfirmAction(string title, string message, string confirmLabel, string cancelLabel) =>
+        new ConfirmationDialog(this, title, message, confirmLabel, cancelLabel).ShowDialog() == true;
+
+    private void TaxAutomationWindow_Closed(object? sender, EventArgs e)
+    {
+        IncomeTaxLoginBox.Clear();
+        IncomeTaxPasswordBox.Clear();
+        GstLoginBox.Clear();
+        GstPasswordBox.Clear();
+        FamilyAccountIdBox.Clear();
+        ProfileIdBox.Clear();
+        ProfileNameBox.Clear();
+        PanBox.Clear();
+        GstinBox.Clear();
+        _profile = null;
+    }
 }
 
 public sealed record TaxTaskPreview(string TaxType, string Document, string Period, string Status);

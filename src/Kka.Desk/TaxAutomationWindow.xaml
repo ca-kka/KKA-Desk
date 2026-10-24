@@ -3,127 +3,128 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Tax Automation | KKA Desk" Height="820" Width="1240"
         MinHeight="720" MinWidth="1060" WindowStartupLocation="CenterOwner"
-        Background="#0B1422" Foreground="#E7EDF5">
+        Background="{StaticResource CanvasBrush}" Foreground="{StaticResource InkBrush}" FontFamily="{StaticResource AppFont}"
+        Closed="TaxAutomationWindow_Closed">
   <Grid Margin="26">
     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
     <DockPanel Grid.Row="0" Margin="0,0,0,20">
       <StackPanel>
-        <TextBlock Text="ADMINISTRATION / TAX OPERATIONS" Foreground="#D6B56D" FontSize="11" FontWeight="Bold"/>
+        <TextBlock Text="ADMINISTRATION / TAX OPERATIONS" Foreground="#365F98" FontSize="11" FontWeight="Bold"/>
         <TextBlock Text="Income Tax &amp; GST automation" FontSize="27" FontWeight="SemiBold" Margin="0,7,0,0"/>
-        <TextBlock Text="Select a family account and one member profile, then preview its tax periods, documents and destination." Foreground="#9AA9BC" FontSize="12" Margin="0,7,0,0"/>
+        <TextBlock Text="Select a family account and one member profile, then preview its tax periods, documents and destination." Foreground="#707783" FontSize="12" Margin="0,7,0,0"/>
       </StackPanel>
-      <Border DockPanel.Dock="Right" Background="#332B1D" BorderBrush="#7C6535" BorderThickness="1" CornerRadius="8" Padding="12,8" VerticalAlignment="Top">
-        <TextBlock Text="PREVIEW MODE — NO PORTAL ACCESS" Foreground="#F0D99F" FontSize="11" FontWeight="Bold"/>
+      <Border DockPanel.Dock="Right" Background="#FFF7E9" BorderBrush="#E8D7B4" BorderThickness="1" CornerRadius="8" Padding="12,8" VerticalAlignment="Top">
+        <TextBlock Text="PREVIEW MODE — NO PORTAL ACCESS" Foreground="#825D23" FontSize="11" FontWeight="Bold"/>
       </Border>
     </DockPanel>
-    <Border Grid.Row="1" Background="#18263B" BorderBrush="#34465E" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,18">
-      <TextBlock Text="Safety boundary: this first build is a UI/workflow prototype. It does not store credentials, connect to government portals, download files, or write to the client portal. Live automation remains disabled until identity, credential vault, portal handling and destination are implemented and tested." TextWrapping="Wrap" Foreground="#C9D4E2" FontSize="12"/>
+    <Border Grid.Row="1" Background="#F7F8FA" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,18">
+      <TextBlock Text="Safety boundary: this screen builds a local preview only. It does not connect to government tax portals, download files, file returns, sign documents, or write to the client portal. Profile-scoped portal credentials are stored only in this Windows user's Credential Manager." TextWrapping="Wrap" Foreground="#505761" FontSize="12"/>
     </Border>
     <Grid Grid.Row="2">
       <Grid.ColumnDefinitions><ColumnDefinition Width="390"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
       <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,16,0">
         <StackPanel>
-          <Border Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,14">
+          <Border Background="#FFFFFF" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,14">
             <StackPanel>
-              <TextBlock Text="1. CLIENT &amp; TAX PROFILE" Foreground="#D6B56D" FontWeight="Bold" FontSize="11" Margin="0,0,0,14"/>
-              <TextBlock Text="Family / primary-holder account ID" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="FamilyAccountIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Existing stable family/account ID. Do not create a new family record."/>
-              <TextBlock Text="Selected member / client profile ID" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="ProfileIdBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="Existing member profile ID; tax documents and settings are scoped to this profile."/>
-              <TextBlock Text="Selected member / profile name" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="ProfileNameBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White"/>
-              <TextBlock Text="PAN (from selected portal profile)" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="PanBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" IsReadOnly="True"/>
-              <TextBlock Text="Relationship / profile type" Foreground="#9AA9BC" FontSize="11"/>
-              <ComboBox x:Name="ProfileTypeBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0">
+              <TextBlock Text="1. CLIENT &amp; TAX PROFILE" Foreground="#365F98" FontWeight="Bold" FontSize="11" Margin="0,0,0,14"/>
+              <TextBlock Text="Family / primary-holder account ID" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="FamilyAccountIdBox" Margin="0,5,0,12" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" ToolTip="Existing stable family/account ID. Do not create a new family record." AutomationProperties.Name="Family or primary-holder account ID"/>
+              <TextBlock Text="Selected member / client profile ID" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="ProfileIdBox" Margin="0,5,0,12" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" ToolTip="Existing member profile ID; tax documents and settings are scoped to this profile." AutomationProperties.Name="Selected member profile ID"/>
+              <TextBlock Text="Selected member / profile name" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="ProfileNameBox" Margin="0,5,0,12" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" AutomationProperties.Name="Selected member profile name"/>
+              <TextBlock Text="PAN (from selected portal profile)" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="PanBox" Margin="0,5,0,12" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" IsReadOnly="True" AutomationProperties.Name="PAN from selected portal profile"/>
+              <TextBlock Text="Relationship / profile type" Foreground="#707783" FontSize="11"/>
+              <ComboBox x:Name="ProfileTypeBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0" AutomationProperties.Name="Relationship or profile type">
                 <ComboBoxItem Content="Primary holder"/>
                 <ComboBoxItem Content="Family member"/>
                 <ComboBoxItem Content="Individual client"/>
                 <ComboBoxItem Content="Business / entity"/>
               </ComboBox>
-              <TextBlock Text="PROFILE ISOLATION: Tax IDs, credentials, filing frequency and documents apply to the selected profile only. Family members do not get separate logins." Foreground="#D6B56D" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12"/>
-              <CheckBox x:Name="IncomeTaxEnabled" Content="Income Tax enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#E7EDF5"/>
-              <CheckBox x:Name="AuditCase" Content="Tax audit case (confirm per year)" Margin="0,0,0,12" Foreground="#E7EDF5"/>
-              <TextBlock Text="Financial year" Foreground="#9AA9BC" FontSize="11"/>
-              <ComboBox x:Name="FinancialYearBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0">
+              <TextBlock Text="PROFILE ISOLATION: Tax IDs, credentials, filing frequency and documents apply to the selected profile only. Family members do not get separate logins." Foreground="#365F98" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12"/>
+              <CheckBox x:Name="IncomeTaxEnabled" Content="Income Tax enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#20242B"/>
+              <CheckBox x:Name="AuditCase" Content="Tax audit case (confirm per year)" Margin="0,0,0,12" Foreground="#20242B"/>
+              <TextBlock Text="Financial year" Foreground="#707783" FontSize="11"/>
+              <ComboBox x:Name="FinancialYearBox" Margin="0,5,0,12" Padding="7" SelectedIndex="0" AutomationProperties.Name="Financial year">
                 <ComboBoxItem Content="FY 2025–26 / AY 2026–27"/>
                 <ComboBoxItem Content="Tax Year 2026–27"/>
                 <ComboBoxItem Content="FY 2024–25 / AY 2025–26"/>
               </ComboBox>
-              <TextBlock Text="GSTIN" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="GstinBox" Margin="0,5,0,12" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White"/>
-              <CheckBox x:Name="GstEnabled" Content="GST enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#E7EDF5"/>
-              <TextBlock Text="GST filing frequency" Foreground="#9AA9BC" FontSize="11"/>
-              <ComboBox x:Name="FrequencyBox" Margin="0,5,0,8" Padding="7" SelectedIndex="0">
+              <TextBlock Text="GSTIN" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="GstinBox" Margin="0,5,0,12" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" AutomationProperties.Name="GSTIN from selected portal profile"/>
+              <CheckBox x:Name="GstEnabled" Content="GST enabled" IsChecked="True" Margin="0,0,0,9" Foreground="#20242B"/>
+              <TextBlock Text="GST filing frequency" Foreground="#707783" FontSize="11"/>
+              <ComboBox x:Name="FrequencyBox" Margin="0,5,0,8" Padding="7" SelectedIndex="0" AutomationProperties.Name="GST filing frequency">
                 <ComboBoxItem Content="Monthly"/>
                 <ComboBoxItem Content="Quarterly (QRMP)"/>
               </ComboBox>
-              <TextBlock Text="Frequency effective from" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="FrequencyEffectiveBox" Text="2025-04" Margin="0,5,0,0" Padding="9" Background="#0B1422" Foreground="White" BorderBrush="#34465E" CaretBrush="White" ToolTip="YYYY-MM. Historical periods use the frequency effective at that time."/>
+              <TextBlock Text="Frequency effective from" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="FrequencyEffectiveBox" Text="2025-04" Margin="0,5,0,0" Padding="9" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" CaretBrush="#20242B" ToolTip="YYYY-MM. Historical periods use the frequency effective at that time." AutomationProperties.Name="Filing frequency effective from year and month"/>
             </StackPanel>
           </Border>
-          <Border Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="18">
+          <Border Background="#FFFFFF" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="12" Padding="18">
             <StackPanel>
-              <TextBlock Text="2. DOCUMENTS TO REQUEST" Foreground="#D6B56D" FontWeight="Bold" FontSize="11" Margin="0,0,0,14"/>
-              <CheckBox x:Name="ItrDocs" Content="ITR return / acknowledgement" IsChecked="True" Margin="0,0,0,10" Foreground="#E7EDF5"/>
-              <CheckBox x:Name="AuditDocs" Content="Tax audit report / available attachments" Margin="0,0,0,10" Foreground="#E7EDF5"/>
-              <CheckBox x:Name="Gstr1Docs" Content="GSTR-1" IsChecked="True" Margin="0,0,0,10" Foreground="#E7EDF5"/>
-              <CheckBox x:Name="Gstr3bDocs" Content="GSTR-3B" IsChecked="True" Margin="0,0,0,10" Foreground="#E7EDF5"/>
-              <TextBlock Text="GST period scope" Foreground="#9AA9BC" FontSize="11" Margin="0,6,0,0"/>
-              <ComboBox x:Name="PeriodScopeBox" Margin="0,5,0,0" Padding="7" SelectedIndex="0">
+              <TextBlock Text="2. DOCUMENTS TO REQUEST" Foreground="#365F98" FontWeight="Bold" FontSize="11" Margin="0,0,0,14"/>
+              <CheckBox x:Name="ItrDocs" Content="ITR return / acknowledgement" IsChecked="True" Margin="0,0,0,10" Foreground="#20242B"/>
+              <CheckBox x:Name="AuditDocs" Content="Tax audit report / available attachments" Margin="0,0,0,10" Foreground="#20242B"/>
+              <CheckBox x:Name="Gstr1Docs" Content="GSTR-1" IsChecked="True" Margin="0,0,0,10" Foreground="#20242B"/>
+              <CheckBox x:Name="Gstr3bDocs" Content="GSTR-3B" IsChecked="True" Margin="0,0,0,10" Foreground="#20242B"/>
+              <TextBlock Text="GST period scope" Foreground="#707783" FontSize="11" Margin="0,6,0,0"/>
+              <ComboBox x:Name="PeriodScopeBox" Margin="0,5,0,0" Padding="7" SelectedIndex="0" AutomationProperties.Name="GST period scope">
                 <ComboBoxItem Content="Current FY — all applicable periods"/>
                 <ComboBoxItem Content="Latest completed period only"/>
                 <ComboBoxItem Content="Select period manually (later phase)"/>
               </ComboBox>
             </StackPanel>
           </Border>
-          <Border Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,14,0,0">
+          <Border Background="#FFFFFF" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,14,0,0">
             <StackPanel>
-              <TextBlock Text="3. TAX PORTAL CREDENTIALS" Foreground="#D6B56D" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
-              <TextBlock Text="Saved in this Windows user's Credential Manager. Separate from the KKA portal login; credentials are not sent to Supabase." Foreground="#9AA9BC" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12"/>
-              <TextBlock Text="Income Tax portal login ID" Foreground="#9AA9BC" FontSize="11"/>
-              <TextBox x:Name="IncomeTaxLoginBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
-              <TextBlock Text="Income Tax portal password" Foreground="#9AA9BC" FontSize="11"/>
-              <PasswordBox x:Name="IncomeTaxPasswordBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <TextBlock Text="3. TAX PORTAL CREDENTIALS" Foreground="#365F98" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
+              <TextBlock Text="Saved in this Windows user's Credential Manager. Separate from the KKA portal login; credentials are not sent to Supabase." Foreground="#707783" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12"/>
+              <TextBlock Text="Income Tax portal login ID" Foreground="#707783" FontSize="11"/>
+              <TextBox x:Name="IncomeTaxLoginBox" Margin="0,5,0,8" Padding="8" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" IsEnabled="False" AutomationProperties.Name="Income Tax portal login ID"/>
+              <TextBlock Text="Income Tax portal password" Foreground="#707783" FontSize="11"/>
+              <PasswordBox x:Name="IncomeTaxPasswordBox" Margin="0,5,0,8" Padding="8" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" IsEnabled="False" AutomationProperties.Name="Income Tax portal password"/>
               <WrapPanel Margin="0,0,0,12">
-                <Button x:Name="SaveIncomeTaxCredentialButton" Content="Save Income Tax credential" Click="SaveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#D6B56D" Foreground="#142033" BorderThickness="0"/>
-                <Button x:Name="RemoveIncomeTaxCredentialButton" Content="Remove saved" Click="RemoveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Background="#26364B" Foreground="#E7EDF5" BorderThickness="0"/>
+                <Button x:Name="SaveIncomeTaxCredentialButton" Content="Save Income Tax credential" Click="SaveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#365F98" Foreground="#FFFFFF" BorderThickness="0"/>
+                <Button x:Name="RemoveIncomeTaxCredentialButton" Content="Remove saved" Click="RemoveIncomeTaxCredential_Click" IsEnabled="False" Padding="10,7" Background="#E7EAF0" Foreground="#20242B" BorderThickness="0"/>
               </WrapPanel>
               <Separator/>
-              <TextBlock Text="GST portal login ID" Foreground="#9AA9BC" FontSize="11" Margin="0,12,0,0"/>
-              <TextBox x:Name="GstLoginBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
-              <TextBlock Text="GST portal password" Foreground="#9AA9BC" FontSize="11"/>
-              <PasswordBox x:Name="GstPasswordBox" Margin="0,5,0,8" Padding="8" Background="#0B1422" Foreground="White" BorderBrush="#34465E" IsEnabled="False"/>
+              <TextBlock Text="GST portal login ID" Foreground="#707783" FontSize="11" Margin="0,12,0,0"/>
+              <TextBox x:Name="GstLoginBox" Margin="0,5,0,8" Padding="8" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" IsEnabled="False" AutomationProperties.Name="GST portal login ID"/>
+              <TextBlock Text="GST portal password" Foreground="#707783" FontSize="11"/>
+              <PasswordBox x:Name="GstPasswordBox" Margin="0,5,0,8" Padding="8" Background="#FFFFFF" Foreground="#20242B" BorderBrush="#E7EAF0" IsEnabled="False" AutomationProperties.Name="GST portal password"/>
               <WrapPanel Margin="0,0,0,10">
-                <Button x:Name="SaveGstCredentialButton" Content="Save GST credential" Click="SaveGstCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#D6B56D" Foreground="#142033" BorderThickness="0"/>
-                <Button x:Name="RemoveGstCredentialButton" Content="Remove saved" Click="RemoveGstCredential_Click" IsEnabled="False" Padding="10,7" Background="#26364B" Foreground="#E7EDF5" BorderThickness="0"/>
+                <Button x:Name="SaveGstCredentialButton" Content="Save GST credential" Click="SaveGstCredential_Click" IsEnabled="False" Padding="10,7" Margin="0,0,8,0" Background="#365F98" Foreground="#FFFFFF" BorderThickness="0"/>
+                <Button x:Name="RemoveGstCredentialButton" Content="Remove saved" Click="RemoveGstCredential_Click" IsEnabled="False" Padding="10,7" Background="#E7EAF0" Foreground="#20242B" BorderThickness="0"/>
               </WrapPanel>
-              <TextBlock x:Name="CredentialStatusText" Text="Credentials unavailable until a live portal profile is selected." Foreground="#9AA9BC" FontSize="11" TextWrapping="Wrap"/>
+              <TextBlock x:Name="CredentialStatusText" Text="Credentials unavailable until a live portal profile is selected." Foreground="#707783" FontSize="11" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
             </StackPanel>
           </Border>
         </StackPanel>
       </ScrollViewer>
       <Grid Grid.Column="1">
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,14">
+        <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,14">
           <StackPanel>
-            <TextBlock Text="3. JOB PREVIEW" Foreground="#D6B56D" FontSize="11" FontWeight="Bold"/>
-            <TextBlock Text="Preview first. No portal actions happen from this screen yet." Foreground="#9AA9BC" FontSize="12" Margin="0,6,0,12"/>
+            <TextBlock Text="4. JOB PREVIEW" Foreground="#365F98" FontSize="11" FontWeight="Bold"/>
+            <TextBlock Text="Preview first. No portal actions happen from this screen yet." Foreground="#707783" FontSize="12" Margin="0,6,0,12"/>
             <WrapPanel>
-              <Button Content="Build job preview" Click="Preview_Click" Padding="14,9" Margin="0,0,8,0" Background="#D6B56D" Foreground="#0B1422" BorderThickness="0" FontWeight="SemiBold"/>
-              <Button Content="Run downloads" Click="Run_Click" Padding="14,9" Margin="0,0,8,0" Background="#26364B" Foreground="#8292A8" BorderThickness="0" IsEnabled="False" ToolTip="Enabled after secure portal automation is implemented."/>
-              <Button Content="Punch documents" Click="Punch_Click" Padding="14,9" Background="#26364B" Foreground="#8292A8" BorderThickness="0" IsEnabled="False" ToolTip="Enabled after download validation and destination integration."/>
+              <Button Content="Build job preview" Click="Preview_Click" Padding="14,9" Margin="0,0,8,0" Background="#365F98" Foreground="White" BorderThickness="0" FontWeight="SemiBold" AutomationProperties.Name="Build job preview"/>
+              <Button Content="Run downloads" Click="Run_Click" Padding="14,9" Margin="0,0,8,0" Background="#E7EAF0" Foreground="#9299A3" BorderThickness="0" IsEnabled="False" ToolTip="Enabled after secure portal automation is implemented." AutomationProperties.Name="Run downloads"/>
+              <Button Content="Punch documents" Click="Punch_Click" Padding="14,9" Background="#E7EAF0" Foreground="#9299A3" BorderThickness="0" IsEnabled="False" ToolTip="Enabled after download validation and destination integration." AutomationProperties.Name="Punch documents"/>
             </WrapPanel>
           </StackPanel>
         </Border>
-        <Border Grid.Row="1" Background="#121E30" BorderBrush="#26364B" BorderThickness="1" CornerRadius="12" Padding="16">
+        <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="12" Padding="16">
           <Grid>
             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
             <DockPanel Grid.Row="0" Margin="0,0,0,12">
               <TextBlock Text="Planned tasks" FontSize="16" FontWeight="SemiBold"/>
-              <TextBlock x:Name="TaskCountText" Text="0 tasks" DockPanel.Dock="Right" Foreground="#9AA9BC" FontSize="11" VerticalAlignment="Center"/>
+              <TextBlock x:Name="TaskCountText" Text="0 tasks" DockPanel.Dock="Right" Foreground="#707783" FontSize="11" VerticalAlignment="Center"/>
             </DockPanel>
-            <DataGrid x:Name="TasksGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" Background="#0B1422" Foreground="#E7EDF5" BorderBrush="#26364B" GridLinesVisibility="Horizontal" RowBackground="#121E30" AlternatingRowBackground="#18263B">
+            <DataGrid x:Name="TasksGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" Background="{StaticResource CanvasBrush}" Foreground="{StaticResource InkBrush}" FontFamily="{StaticResource AppFont}" BorderBrush="#E7EAF0" GridLinesVisibility="None" RowBackground="#FFFFFF" AlternatingRowBackground="#F7F8FA" AutomationProperties.Name="Previewed tax tasks">
               <DataGrid.Columns>
                 <DataGridTextColumn Header="Tax" Binding="{Binding TaxType}" Width="90"/>
                 <DataGridTextColumn Header="Document" Binding="{Binding Document}" Width="*"/>
@@ -133,11 +134,11 @@
             </DataGrid>
           </Grid>
         </Border>
-        <Border Grid.Row="2" Background="#18263B" BorderBrush="#34465E" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,14,0,0">
+        <Border Grid.Row="2" Background="#F7F8FA" BorderBrush="#E7EAF0" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,14,0,0">
           <StackPanel>
-            <TextBlock Text="4. PUNCH DESTINATION PREVIEW" Foreground="#D6B56D" FontWeight="Bold" FontSize="11"/>
-            <TextBlock x:Name="PunchPreviewText" Text="Build a job preview to inspect the intended client folders. Destination is not connected yet." TextWrapping="Wrap" Foreground="#C9D4E2" FontSize="12" Margin="0,7,0,0"/>
-            <TextBlock x:Name="StatusText" Text="Ready — preview only." Foreground="#9AA9BC" FontSize="11" Margin="0,9,0,0"/>
+            <TextBlock Text="5. PUNCH DESTINATION PREVIEW" Foreground="#365F98" FontWeight="Bold" FontSize="11"/>
+            <TextBlock x:Name="PunchPreviewText" Text="Build a job preview to inspect the intended client folders. Destination is not connected yet." TextWrapping="Wrap" Foreground="#505761" FontSize="12" Margin="0,7,0,0"/>
+            <TextBlock x:Name="StatusText" Text="Ready — preview only." Foreground="#707783" FontSize="11" Margin="0,9,0,0"/>
           </StackPanel>
         </Border>
       </Grid>

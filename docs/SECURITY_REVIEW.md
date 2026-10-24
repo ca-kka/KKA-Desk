@@ -19,6 +19,7 @@ This is a planning baseline, not a completed security audit.
 ## Current status
 - Repository is public; avoid committing secrets, real client data, or environment-specific credentials.
 - No production portal or Supabase resources have been changed.
+- The desktop shell now includes a local personal reminder queue. It has no client selector, attachments, or synchronization; its UI warns against entering client names, identifiers, phone numbers, tax IDs, or document details. The queue is not approved as storage for client work.
 - Desktop sign-in/OTP flow is implemented against the portal's existing OTP function, but live acceptance testing and session refresh/revocation handling remain incomplete; not production-approved.
 - Windows CI build, XAML/XML validation, 15 dummy-only integration checks, startup smoke test, and Windows UI Automation navigation/safety checks have passed on the hosted Windows runner. This does not replace live acceptance testing or a dedicated Windows pilot.
 - No sensitive modules should be enabled until the requirements above pass review.

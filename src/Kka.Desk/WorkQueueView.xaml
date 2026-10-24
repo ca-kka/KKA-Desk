@@ -1,0 +1,148 @@
+<UserControl x:Class="Kka.Desk.WorkQueueView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent"
+             AutomationProperties.Name="Personal work queue">
+  <Grid x:Name="Root" Background="Transparent" PreviewKeyDown="Root_PreviewKeyDown">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0" Margin="0,0,0,22" LastChildFill="True">
+      <Button DockPanel.Dock="Right" Content="Add reminder" Style="{StaticResource PrimaryButtonStyle}"
+              Click="AddReminder_Click" AutomationProperties.Name="Add reminder"
+              ToolTip="Create a personal reminder (Ctrl+N)"/>
+      <StackPanel Margin="0,0,18,0">
+        <TextBlock Text="YOUR PERSONAL WORK" Foreground="{StaticResource AccentBrush}"
+                   FontSize="10" FontWeight="Bold"/>
+        <TextBlock Text="A small, clear list for your day" Foreground="{StaticResource SecondaryInkBrush}"
+                   FontSize="13" Margin="0,5,0,0"/>
+      </StackPanel>
+    </DockPanel>
+
+    <Grid Grid.Row="1" Margin="0,0,0,16">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Grid Grid.Column="0" Height="42" Margin="0,0,12,0">
+        <TextBox x:Name="SearchBox" Height="42" Style="{StaticResource InputTextBoxStyle}"
+                 TextChanged="SearchBox_TextChanged" AutomationProperties.Name="Search personal reminders"
+                 ToolTip="Search reminder titles"/>
+        <TextBlock x:Name="SearchHintText" Text="Search reminders" Foreground="{StaticResource MutedInkBrush}"
+                   FontSize="13" Margin="12,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+      </Grid>
+      <ComboBox x:Name="FilterBox" Grid.Column="1" Width="170" Height="42"
+                SelectionChanged="FilterBox_SelectionChanged"
+                AutomationProperties.Name="Filter reminders"
+                ToolTip="Filter the reminder list">
+        <ComboBoxItem Content="All reminders"/>
+        <ComboBoxItem Content="Open"/>
+        <ComboBoxItem Content="Completed"/>
+      </ComboBox>
+    </Grid>
+
+    <Grid Grid.Row="2">
+      <DataGrid x:Name="ItemsGrid" Visibility="Collapsed" AutoGenerateColumns="False"
+                IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow"
+                HeadersVisibility="Column" CanUserSortColumns="True"
+                AutomationProperties.Name="Personal reminders">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="REMINDER" Binding="{Binding Title}" Width="2.2*" MinWidth="150"/>
+          <DataGridTextColumn Header="TYPE" Binding="{Binding Category}" Width="1.0*" MinWidth="78"/>
+          <DataGridTextColumn Header="PRIORITY" Binding="{Binding Priority}" Width="0.85*" MinWidth="74"/>
+          <DataGridTextColumn Header="DUE" Binding="{Binding DueDateLabel}" Width="1.0*" MinWidth="88"/>
+          <DataGridTemplateColumn Header="STATUS" Width="0.9*" MinWidth="82">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding StatusLabel}" Foreground="{StaticResource SecondaryInkBrush}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="ACTIONS" Width="160" MinWidth="150">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <Button Content="{Binding CompletionActionLabel}" Click="ToggleCompletion_Click"
+                          Style="{StaticResource SecondaryButtonStyle}" Padding="8,5" FontSize="11"
+                          Margin="0,0,6,0" ToolTip="Complete or reopen this reminder"/>
+                  <Button Content="Delete" Click="DeleteReminder_Click"
+                          Style="{StaticResource SecondaryButtonStyle}" Padding="8,5" FontSize="11"
+                          Foreground="{StaticResource DangerBrush}" ToolTip="Delete this reminder"/>
+                </StackPanel>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <Border x:Name="LoadingState" Visibility="Collapsed" Background="{StaticResource SurfaceBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16"
+              Padding="34" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="Loading your reminders…" Foreground="{StaticResource SecondaryInkBrush}"
+                     FontSize="15" HorizontalAlignment="Center"/>
+          <TextBlock Text="Your list stays on this Windows account." Foreground="{StaticResource MutedInkBrush}"
+                     FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+        </StackPanel>
+      </Border>
+
+      <Border x:Name="EmptyState" Visibility="Collapsed" Background="{StaticResource SurfaceBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16"
+              Padding="34" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="420">
+          <Border Width="48" Height="48" CornerRadius="15" Background="{StaticResource AccentWashBrush}"
+                  HorizontalAlignment="Center" Margin="0,0,0,16">
+            <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource AccentBrush}"
+                       FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <TextBlock Text="Nothing on your list yet" Foreground="{StaticResource InkBrush}"
+                     FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+          <TextBlock Text="Add a general personal reminder to give yourself a clear next step."
+                     Foreground="{StaticResource SecondaryInkBrush}" FontSize="13" TextWrapping="Wrap"
+                     TextAlignment="Center" Margin="0,8,0,18"/>
+          <Button Content="Create a reminder" Click="AddReminder_Click" Style="{StaticResource SecondaryButtonStyle}"
+                  AutomationProperties.Name="Create a reminder"/>
+        </StackPanel>
+      </Border>
+
+      <Border x:Name="NoResultsState" Visibility="Collapsed" Background="{StaticResource SurfaceBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16"
+              Padding="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="No reminders match" Foreground="{StaticResource InkBrush}"
+                     FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+          <TextBlock Text="Try a different search or choose another status filter."
+                     Foreground="{StaticResource SecondaryInkBrush}" FontSize="13"
+                     Margin="0,7,0,0" HorizontalAlignment="Center"/>
+        </StackPanel>
+      </Border>
+
+      <Border x:Name="ErrorState" Visibility="Collapsed" Background="{StaticResource SurfaceBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16"
+              Padding="34" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="430">
+          <TextBlock Text="Your reminders could not be opened" Foreground="{StaticResource InkBrush}"
+                     FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+          <TextBlock Text="The local file was left untouched. You can try again after checking that KKA Desk can access your Windows profile."
+                     Foreground="{StaticResource SecondaryInkBrush}" FontSize="13" TextWrapping="Wrap"
+                     TextAlignment="Center" Margin="0,8,0,18"/>
+          <Button Content="Try again" Click="Retry_Click" Style="{StaticResource SecondaryButtonStyle}"
+                  AutomationProperties.Name="Retry opening reminders"/>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <DockPanel Grid.Row="3" Margin="0,12,0,0" LastChildFill="False">
+      <TextBlock x:Name="StatusText" DockPanel.Dock="Left" Text="Saved on this Windows account"
+                 Foreground="{StaticResource MutedInkBrush}" FontSize="11"/>
+      <TextBlock DockPanel.Dock="Right"
+                 Text="Personal reminders only · Do not enter client names, IDs, phone numbers, tax IDs, or document details"
+                 Foreground="{StaticResource MutedInkBrush}" FontSize="10" TextAlignment="Right"
+                 TextWrapping="Wrap" MaxWidth="470"/>
+    </DockPanel>
+  </Grid>
+</UserControl>

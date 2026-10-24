@@ -1,0 +1,33 @@
+<Window x:Class="Kka.Desk.ConfirmationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Confirmation | KKA Desk" Width="500" MinWidth="460" SizeToContent="Height"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource CanvasBrush}" FontFamily="{StaticResource AppFont}"
+        Foreground="{StaticResource InkBrush}" AutomationProperties.Name="Confirmation">
+  <Grid Margin="28">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0" Margin="0,0,0,24">
+      <TextBlock Text="PLEASE CONFIRM" Foreground="{StaticResource AccentBrush}"
+                 FontSize="10" FontWeight="Bold"/>
+      <TextBlock x:Name="HeadingText" Text="Confirm action" Foreground="{StaticResource InkBrush}"
+                 FontSize="22" FontWeight="SemiBold" Margin="0,7,0,0"/>
+      <TextBlock x:Name="MessageText" TextWrapping="Wrap" Foreground="{StaticResource SecondaryInkBrush}"
+                 FontSize="13" Margin="0,9,0,0"/>
+    </StackPanel>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button x:Name="CancelButton" Content="Cancel" Click="Cancel_Click"
+              Style="{StaticResource SecondaryButtonStyle}" MinWidth="100" Margin="0,0,10,0"
+              IsCancel="True" AutomationProperties.Name="Cancel confirmation"/>
+      <Button x:Name="ConfirmButton" Content="Confirm" Click="Confirm_Click"
+              Style="{StaticResource PrimaryButtonStyle}" MinWidth="130"
+              AutomationProperties.Name="Confirm action"/>
+    </StackPanel>
+  </Grid>
+</Window>

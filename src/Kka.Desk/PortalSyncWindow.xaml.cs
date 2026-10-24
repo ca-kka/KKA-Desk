@@ -28,6 +28,20 @@ public partial class PortalSyncWindow : Window
         _syncService = new PortalSyncService(_httpClient, _options);
     }
 
+    private void CredentialInput_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        e.Handled = true;
+        SignInButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    }
+
+    private void OtpBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        e.Handled = true;
+        VerifyOtpButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    }
+
     private async void SignIn_Click(object sender, RoutedEventArgs e)
     {
         if (SignInButton.IsEnabled == false) return;

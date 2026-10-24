@@ -10,13 +10,13 @@ Private Windows-first desktop workspace for Kamal Kuldeep & Associates (KKA).
 
 ## Current milestone
 
-The repository contains the initial WPF solution and KKA-branded workspace shell, plus architecture, phased delivery, and security guardrail documents. The shell is still a **non-production foundation preview**. A portal-sync window supports the existing KKA sign-in/OTP gate and loads active family/profile associations for administrators. Selected profiles can be passed into the tax preview, where profile-specific Income Tax and GST credentials can be saved to Windows Credential Manager; government portal downloads and document punching remain disabled.
+KKA Desk is a **non-production foundation preview**. The WPF shell includes a local personal reminder queue with search, status filters, completion/reopen, and confirmed deletion. Reminders are stored for the current Windows user only and are not connected to client records; do not enter client names, identifiers, or document details. A portal-sync window preserves the existing KKA sign-in/OTP gate and loads active family/profile associations for administrators. Selected profiles can be passed into the tax preview, where profile-specific Income Tax and GST credentials can be saved to Windows Credential Manager; government portal downloads and document punching remain disabled.
 
 ## Planned first release
 
 - Dashboard with automatically synchronized important due dates from ca-kka.com
 - Portal-compatible sign-in/OTP and administrator-only profile synchronization (initial integration; requires live acceptance testing)
-- Documents, queries, directory, queue, and admin modules
+- Documents, queries, server-backed queue, and admin modules
 - PDF viewing and drag-and-drop
 - Windows installer with update notifications and user-confirmed installation
 
@@ -37,7 +37,7 @@ dotnet restore Kka.Desk.sln
 dotnet build Kka.Desk.sln --configuration Release
 ```
 
-GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and Windows UI Automation checks for navigation and disabled live-tax actions. CodeQL C# analysis runs in a separate workflow so it cannot block the Windows download artifact.
+GitHub Actions builds on a Windows runner with warnings-as-errors, XAML/XML parsing, merge-conflict checks, local reminder-store tests using temporary files and synthetic data, Windows Credential Manager isolation/cleanup tests using dummy credentials, mocked OTP and staff-role authorization tests, an executable startup smoke test, and Windows UI Automation checks for navigation and disabled live-tax actions. CI verification is configured to run in pull requests. CodeQL C# analysis runs in a separate workflow so it cannot block the Windows download artifact.
 
 ## Not production-ready yet
 

@@ -39,7 +39,11 @@ The profile is maintained in KKA Desk only for this feature; it does not write t
 - GST return period selection and optional quarter/month override
 - Credential status and last successful portal test (metadata only)
 
-### Profile validation
+### Family/profile validation
+- First select the existing family/account, then select exactly one existing member/client profile within it. Use the existing account ID and profile ID; do not create a duplicate client or family record.
+- Every job, credential reference, file path, deduplication key and audit record must include the selected profile ID. The family/account ID is retained as a grouping/authorization reference.
+- A job is for the selected profile only unless the admin explicitly chooses a family batch. A family batch must expand into separate profile-scoped jobs and show every member, identifier suffix, tax type, period and destination in a preview before the batch can start.
+- Do not infer that a family member shares the primary holder's PAN, GSTIN, portal credentials, filing frequency, audit classification or tax documents. Each selected profile must be configured and validated independently.
 - Do not start a job if required identifiers are missing/invalid, the profile is inactive, or credential setup is incomplete.
 - GST filing frequency is explicit per GST registration; do not infer it from client type, turnover, or another GSTIN.
 - Changes to GST frequency are effective-dated. Never reclassify historical periods using today's setting.
@@ -61,7 +65,7 @@ The profile is maintained in KKA Desk only for this feature; it does not write t
 
 ## 4. Document catalogue and destination rules
 
-All paths are generated from a stable internal client ID, not client-supplied free text. Sanitize display names and prevent path traversal. Store downloaded files in the app's configured protected document root; a local path or existing document-store integration must be explicitly configured and tested before real downloads are enabled.
+All paths are generated from the existing stable account ID plus the selected member/profile ID, not client-supplied free text. Keep each member's documents segregated even when the family shares a primary-holder login. Sanitize display names and prevent path traversal. Store downloaded files in the app's configured protected document root; a local path or existing document-store integration must be explicitly configured and tested before real downloads are enabled.
 
 Suggested folder layout:
 
@@ -135,3 +139,18 @@ File naming format: `<ClientCode>_<TaxType>_<DocumentType>_<Period>_<DownloadedU
 - No credential values or session tokens appear in logs, config files, source control, or UI after saving.
 - Every action has a sanitized audit record and a clear outcome.
 - The app never submits or signs returns.
+
+
+## 10. Client-and-family profile model (required)
+
+The existing client portal's family structure is reused as-is; this feature does not alter it.
+
+- **Family/account**: existing primary-holder account and stable account ID. It is a grouping/ownership context, not the document owner by itself.
+- **Member/client profile**: the existing profile ID representing the selected person or entity. This is the tax-work subject and default document segregation boundary.
+- **No new family-member logins**: family members continue to be represented under the existing primary-holder account/login arrangement. KKA Desk tax controls are only available to authenticated admins.
+- **Tax settings attach to the profile**: PAN, Income Tax portal identity, audit applicability, GSTIN/registration, filing frequency/effective dates and credential references are scoped to the profile/registration. Do not copy settings from the primary holder into a family member automatically.
+- **One profile, multiple registrations**: if a profile has more than one GST registration, each GSTIN has its own frequency history, credential reference and GST download job. This is a later model extension if the first UI only supports one GSTIN.
+- **Family batch**: optional admin convenience only. Expand into independent member jobs; one member's failure must not hide the result for other members. The preview must clearly list each selected profile and destination. No batch may silently combine files from different profiles.
+- **Destination structure**: `<configured-root>/<FamilyAccountID>/<ProfileID>/<Income Tax or GST>/...`. Folder display names are labels only; IDs are the canonical segregation keys. Never write a family member's documents into another member's folder.
+- **Audit trail**: include actor ID, family/account ID, profile ID, tax identifier reference (not the secret), GST registration ID where applicable, period, job ID, result and file hash. Avoid logging full PAN/GSTIN and never log passwords, OTPs, cookies or tokens.
+- **Acceptance tests**: verify primary holder and family member with different PANs; verify one family member has GST and another does not; verify different GST frequencies within the same family; verify profile selection never reuses another profile's credentials or destination; verify family batch partial failures remain separately reported.

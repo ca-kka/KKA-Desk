@@ -56,8 +56,8 @@ public sealed class PortalSyncService(HttpClient httpClient, PortalSyncOptions o
             throw new PortalSyncException("No active KKA portal profile was found.");
 
         var role = ReadString(profile, "role");
-        if (ReadBool(profile, "active") != true || role is not ("admin" or "staff"))
-            throw new PortalSyncException("KKA Desk is restricted to active staff and administrators.");
+        if (ReadBool(profile, "active") != true || role != "admin")
+            throw new PortalSyncException("This tax-profile synchronisation is restricted to active KKA administrators.");
 
         // The caller must only set portalMfaSatisfied after the existing portal
         // verification flow has completed; password authentication alone is insufficient.

@@ -33,4 +33,10 @@ public partial class MainWindow : Window
 
     private void Admin_Click(object sender, RoutedEventArgs e) =>
         ShowModule("Administration", "Admin controls will be available only after role and MFA requirements are verified.");
+
+    private void TaxAutomation_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new TaxAutomationWindow { Owner = this };
+        window.ShowDialog();
+    }
 }
